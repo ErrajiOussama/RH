@@ -1,0 +1,7 @@
+{% load crispy_forms_tags %}
+
+<form method="POST" enctype="multipart/form-data" data-url="{% url 'EditG' id=gamme.id %}" class="create-form">
+   {% csrf_token %}
+   {{form|crispy}}
+   <button type="submit" name="Ajouter" value="Ajouter" class="btn bg-gradient-dark w-100 my-4 mb-2">Ajouter</button>
+</form>
