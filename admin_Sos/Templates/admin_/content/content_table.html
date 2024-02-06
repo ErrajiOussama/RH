@@ -13,7 +13,7 @@
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Collaborateur</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Statut</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Statut</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prenom</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Sexe</th>
@@ -28,9 +28,14 @@
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N_de_téléphone</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">RIB</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Type_de_contrat</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rémunération</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Poste</th>
-    
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date d entrée</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date de sortie</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Primes</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Taux Horaire</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Horaire</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prime avance</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rémunération</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -39,49 +44,79 @@
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ C.Nom }}</h6>
+                            <h6 class="mb-0 text-sm">{{ C.id }}</h6>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.status }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Statut }}</p>
                       </td>
                       <td>
                         <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Prenom}}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Prenom }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Sexe}}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_naissance}}</p>
                       </td>                       
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.id }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Age }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Situation_familiale }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Nombre_d_enfants }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.N_CIN }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.N_Passeport }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Ville }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.E_mail }}</p>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.N_de_téléphone }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.RIB }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Type_de_contrat }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Poste }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Date_d_entrée }}</p>
                       </td>
                       <td class="align-middle text-center text-sm">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_Sortie }}</p>
                       </td>
                       <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
-                      </td>                    
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Prime }}</p>
+                      </td>  
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Taux_Horaire }}</p>
+                      </td> 
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Horaire }}</p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Prime_Avancee }}</p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Rémunération }}</p>
+                      </td>   
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ p.id_Collaboratteur.Nom }}</p>
                       </td>
