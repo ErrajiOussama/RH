@@ -2,43 +2,49 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login ,logout
-from django.contrib.auth.decorators import login_required
 from django.views import View
+from django.contrib.auth.forms import UserCreationForm
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
 from django.utils import timezone
+from .decorators import * 
 
-# Create your views here.
+
 class IndexView(View):
     def get(self,request):
         return render(request,'Agent/index.html')
     
 
-
-def login_view(request):
+@unauthenticated_user
+def loginPageView(request):    
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        print("good")
+        username1 = request.POST['username']
+        password1 = request.POST['password1']
+        user = authenticate(request, username=username1, password=password1)
         if user is not None:
-            print("good_123")
             login(request, user)
-            print("good")
-            if Collaborateur.objects.get(Poste='admin'):
-                # Redirect to a success page
-                return redirect('home_admin')
-            if Collaborateur.objects.get(Poste='agent'):
-                # Redirect to a success page
-                return redirect('home')
-        else:
-            # Display an error message
-            messages.error(request, 'Invalid Log or password.')
+            messages.info(request, 'Vous ete connecter')
+            return redirect('home')
+    else:
+        formRegister = registerForm()
+    context = {'formRegister' : formRegister}
+    return render(request, 'Agent/login.html', context )
+
+@unauthenticated_user
+def registerPageView(request):    
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST) 
+        if form.is_valid():
+            form.save()
+            messages.info(request, 'Vous avez créé votre compte, veuillez vous connecter.')
             return redirect('login')
     else:
-        return render(request, 'Agent/login.html')
+        form = UserCreationForm()
+    context = {'form': form}
+    return render(request, 'admin_/register.html', context)
 
+@allowed_users(allowed_roles=['Admin'])
 class AdminView(View):
     def get(self,request):
         collaborateur=Collaborateur.objects.all().count()
@@ -46,7 +52,8 @@ class AdminView(View):
             'collaborateur':collaborateur,
         }
         return render(request,'admin_/home_admin.html',context)
-    
+
+@allowed_users(allowed_roles=['Admin'])
 class TableView(View):
     def get(self,request):
         collaborateur=Collaborateur.objects.all()
@@ -55,6 +62,7 @@ class TableView(View):
         }
         return render(request,'admin_/tables.html',context)
 
+@allowed_users(allowed_roles=['Admin'])
 def AddCView(request):
         if request.method == "POST":
             form = Collaborateurform(data=request.POST,files=request.FILES)
@@ -65,6 +73,7 @@ def AddCView(request):
             form = Collaborateurform()
         return render(request,'admin_/addC.html',{'form':form})
 
+@allowed_users(allowed_roles=['Admin'])
 def EditCView(request,id):
     instance= Collaborateur.objects.get(id=id)
     if request.method == "POST":
@@ -76,6 +85,7 @@ def EditCView(request,id):
         form = Collaborateurform(instance=instance)
     return render(request,'admin_/EditC.html',{'form':form,'collaborateur':instance})
 
+@allowed_users(allowed_roles=['Admin'])
 def DelCView(request,id):
     dele=Collaborateur.objects.get(id=id)
     dele.delete()

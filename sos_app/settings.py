@@ -46,7 +46,7 @@ ROOT_URLCONF = 'sos_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'Templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +118,3 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  # Use 'bootstrap4' or 'bootstrap5' depending on your preference
 
-AUTHENTICATION_BACKENDS = [
-    'admin_Sos.backend.CollaborateurAuthBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]

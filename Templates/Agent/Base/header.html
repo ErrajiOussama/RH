@@ -69,7 +69,7 @@
     </div>
     {% if request.user.is_authenticated%}
     <div> Hello {{request.user}}</a></div>
-    <a href="" class="btn btn-primary px-3 d-none d-lg-block">Logout</a>
+    <a href="{% url 'logout' %}" class="btn btn-primary px-3 d-none d-lg-block">Logout</a>
     {% endif %}	
     {% if not request.user.is_authenticated%}
     <a href="{% url 'login' %}" class="btn btn-primary px-3 d-none d-lg-block">Login</a>

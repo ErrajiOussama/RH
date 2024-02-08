@@ -1,15 +1,12 @@
-from django.db.models.fields import Field
+from django.apps import apps
+from django.forms import ModelForm
+from django.contrib.auth.forms import *
+from django.contrib.auth.models import User
 from .models import *
 from django import forms
-from datetime import datetime
-from django.urls import reverse_lazy
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
-from django.contrib.auth.forms import AuthenticationForm
-
+from django.core.exceptions import ValidationError
 
 class Collaborateurform(forms.ModelForm):
-    
     class Meta:
         model=Collaborateur
         fields= '__all__'
@@ -17,7 +14,6 @@ class Collaborateurform(forms.ModelForm):
             'Date_de_naissance': forms.DateInput(attrs={'class': 'datepicker'}),
             'Date_d_entrée': forms.DateInput(attrs={'class': 'datepicker'}),
             'Date_de_Sortie': forms.DateInput(attrs={'class': 'datepicker'}),
-            # Add other fields with their respective attributes here
             'Statut': forms.TextInput(attrs={'class': 'form-control'}),
             'Nom': forms.TextInput(attrs={'class': 'form-control'}),
             'Prenom': forms.TextInput(attrs={'class': 'form-control'}),
@@ -44,7 +40,22 @@ class Collaborateurform(forms.ModelForm):
             'stop_time': forms.DateTimeInput(attrs={'class': 'form-control'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
-
-
-
-        
+collaborateur = apps.get_model('admin_Sos','Collaborateur')
+class registerForm(UserCreationForm):
+ username = None
+ def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.fields['username'].widget.attrs.update({'placeholder': ('Votre nom d\'utilisateur...')})
+    self.fields['password1'].widget.attrs.update({'placeholder': ('Votre mot de passe...')})
+    self.fields['password2'].widget.attrs.update({'placeholder': ('Repeter votre mot de passe...')})
+ 
+ def clean(self):
+    username = self.cleaned_data.get('username')
+    if User.objects.filter(username=username).exists():
+        raise ValidationError("Username exists")
+    return self.cleaned_data
+ #group = forms.ModelChoiceField(queryset=Group.objects.get(name="Client"), required=False)
+ 
+ class Meta:
+     model = User
+     fields = ['username','password1','password2']
