@@ -7,15 +7,37 @@ from django.views import View
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
+from django.utils import timezone
 
 # Create your views here.
 class IndexView(View):
     def get(self,request):
-        return render(request,'index.html')
+        return render(request,'Agent/index.html')
     
 
-def loginPageView(request):
-    return render(request, 'Login.html')  
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        print("good")
+        if user is not None:
+            print("good_123")
+            login(request, user)
+            print("good")
+            if Collaborateur.objects.get(Poste='admin'):
+                # Redirect to a success page
+                return redirect('home_admin')
+            if Collaborateur.objects.get(Poste='agent'):
+                # Redirect to a success page
+                return redirect('home')
+        else:
+            # Display an error message
+            messages.error(request, 'Invalid Log or password.')
+            return redirect('login')
+    else:
+        return render(request, 'Agent/login.html')
 
 class AdminView(View):
     def get(self,request):
@@ -62,3 +84,18 @@ def DelCView(request,id):
             'collaborateur':cola,
         }
     return render(request,'admin_/tables.html',context)
+
+def logoutview(request):
+    logout(request)
+    return redirect('home')
+
+
+def chrono_view(request):
+    if request.method == 'POST':
+        start_time = timezone.now()
+        stop_time = timezone.now()  # You may need to modify this logic depending on your requirements
+        elapsed_time = stop_time - start_time
+        chrono_data = Collaborateur.objects.create(start_time=start_time, stop_time=stop_time, elapsed_time=elapsed_time)
+        chrono_data.save()
+        return redirect('chrono')  # Redirect to the chrono page after saving the data
+    return render(request, 'Agent/chrono.html')

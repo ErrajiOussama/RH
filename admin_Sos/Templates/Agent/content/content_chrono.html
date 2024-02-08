@@ -1,0 +1,89 @@
+{% load static %}
+<body>
+    <div class="chrono-container">
+        <div class="chrono-display" id="chrono-display">00:00:00</div>
+        <form method="post" id="chrono-form">
+            {% csrf_token %}
+            <input type="hidden" name="start_time" id="start-time" value="">
+            <input type="hidden" name="stop_time" id="stop-time" value="">
+            <input type="hidden" name="elapsed_time" id="elapsed-time" value="">
+            <button type="submit" class="chrono-btn" id="start-btn" onclick="startChrono()">Start</button>
+            <button type="button" class="chrono-btn" id="stop-btn" onclick="stopChrono()">Stop</button>
+            <button type="reset" class="chrono-btn" id="reset-btn" onclick="resetChrono()">Reset</button>
+        </form>
+    </div>
+
+    <script>
+        var startTime, interval;
+
+        function startChrono() {
+            startTime = new Date().getTime();
+            document.getElementById("start-time").value = startTime;
+            interval = setInterval(updateChrono, 1000);
+            document.getElementById("start-btn").disabled = true;
+            document.getElementById("stop-btn").disabled = false;
+        }
+
+        function stopChrono() {
+            clearInterval(interval);
+            var stopTime = new Date().getTime();
+            document.getElementById("stop-time").value = stopTime;
+            var elapsedTime = stopTime - startTime;
+            document.getElementById("elapsed-time").value = elapsedTime;
+            document.getElementById("chrono-form").submit();
+        }
+
+        function resetChrono() {
+            clearInterval(interval);
+            document.getElementById("chrono-display").innerText = "00:00:00";
+            document.getElementById("start-btn").disabled = false;
+            document.getElementById("chrono-form").reset();
+        }
+
+        function updateChrono() {
+            var currentTime = new Date().getTime();
+            var elapsedTime = currentTime - startTime;
+            var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+            document.getElementById("chrono-display").innerText = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+        }
+
+        function formatTime(time) {
+            return time>10 ? "0" + time : time;
+        }
+    </script>
+</body>
+
+<style>
+  
+    .chrono-container {
+        text-align: center;
+        background-color: #fff;
+        padding: 200px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .chrono-display {
+        font-size: 36px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .chrono-btn {
+        font-size: 18px;
+        padding: 10px 20px;
+        margin: 0 10px;
+        border: none;
+        background-color: #015FC9;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .chrono-btn:hover {
+        background-color: #0DD3F1;
+    }
+</style>
