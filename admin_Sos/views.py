@@ -2,21 +2,18 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login ,logout
-from django.views import View
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
 from django.utils import timezone
-from .decorators import * 
+from .decorators import *
 
 
-class IndexView(View):
-    def get(self,request):
-        return render(request,'Agent/index.html')
-    
+def IndexView(request):
+    return render(request,'Agent/index.html')
 
-@unauthenticated_user
+
 def loginPageView(request):    
     if request.method == 'POST':
         username1 = request.POST['username']
@@ -31,49 +28,63 @@ def loginPageView(request):
     context = {'formRegister' : formRegister}
     return render(request, 'Agent/login.html', context )
 
-@unauthenticated_user
+@admin_only
 def registerPageView(request):    
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST) 
-        if form.is_valid():
-            form.save()
-            messages.info(request, 'Vous avez créé votre compte, veuillez vous connecter.')
-            return redirect('login')
+    if request.POST:
+        formRegister = registerForm(request.POST)
+        if request.POST.get("sign-up"):
+            group=request.POST['group']
+            if formRegister.is_valid():
+                id = formRegister.cleaned_data.get('id')
+                if id:
+                    try:
+                        collaborateur = Collaborateur.objects.get(id=id)
+                        user = formRegister.save()
+                        user.groups.add(Group.objects.get(name=group))
+                        collaborateur.user = user
+                        collaborateur.save()
+                        messages.info(request, 'Votre compte a été créé avec succès. Veuillez vous connecter.')
+                        return redirect('home_admin')
+                    except Collaborateur.DoesNotExist:
+                        messages.error(request, 'Collaborateur ID invalide.')   
     else:
-        form = UserCreationForm()
-    context = {'form': form}
-    return render(request, 'admin_/register.html', context)
+        formRegister = registerForm()
+    context = {'formRegister' : formRegister}
+    return render(request, 'admin_/register.html', context )
 
-@allowed_users(allowed_roles=['Admin'])
-class AdminView(View):
-    def get(self,request):
-        collaborateur=Collaborateur.objects.all().count()
-        context={
-            'collaborateur':collaborateur,
-        }
-        return render(request,'admin_/home_admin.html',context)
+@login_required(login_url='login')
+@admin_only
+def Adimn_view(request):
+    collaborateur=Collaborateur.objects.all().count()
+    context={
+        'collaborateur':collaborateur,
+    }
+    return render(request,'admin_/home_admin.html',context)
 
-@allowed_users(allowed_roles=['Admin'])
-class TableView(View):
-    def get(self,request):
-        collaborateur=Collaborateur.objects.all()
-        context={
-            'collaborateur':collaborateur,     
-        }
-        return render(request,'admin_/tables.html',context)
+@login_required(login_url='login')
+@admin_only
+def TableView(request):
+    collaborateur=Collaborateur.objects.all()
+    context={
+        'collaborateur':collaborateur,     
+    }
+    return render(request,'admin_/tables.html',context)
 
-@allowed_users(allowed_roles=['Admin'])
+@login_required(login_url='login')
+@admin_only
 def AddCView(request):
-        if request.method == "POST":
-            form = Collaborateurform(data=request.POST,files=request.FILES)
-            if form.is_valid:
-                form.save()
-                return redirect('table')
-        if request.method == "GET":
-            form = Collaborateurform()
-        return render(request,'admin_/addC.html',{'form':form})
+    if request.method == "POST":
+        form = Collaborateurform(data=request.POST,files=request.FILES)
+        if form.is_valid:
+            form.save()
+            return redirect('table')
+    if request.method == "GET":
+        form = Collaborateurform()
+    return render(request,'admin_/addC.html',{'form':form})
 
-@allowed_users(allowed_roles=['Admin'])
+
+@login_required(login_url='login')
+@admin_only
 def EditCView(request,id):
     instance= Collaborateur.objects.get(id=id)
     if request.method == "POST":
@@ -85,7 +96,8 @@ def EditCView(request,id):
         form = Collaborateurform(instance=instance)
     return render(request,'admin_/EditC.html',{'form':form,'collaborateur':instance})
 
-@allowed_users(allowed_roles=['Admin'])
+@login_required(login_url='login')
+@admin_only
 def DelCView(request,id):
     dele=Collaborateur.objects.get(id=id)
     dele.delete()
@@ -99,7 +111,7 @@ def logoutview(request):
     logout(request)
     return redirect('home')
 
-
+@login_required(login_url='login')
 def chrono_view(request):
     if request.method == 'POST':
         start_time = timezone.now()

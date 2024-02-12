@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Collaborateur(models.Model):
     Statut = models.CharField(max_length=10,null=True,blank=True)
@@ -28,9 +29,9 @@ class Collaborateur(models.Model):
     Prime_Avancee = models.FloatField(null=True,blank=True)
     start_time = models.DateTimeField(null=True,blank=True)
     stop_time = models.DateTimeField(null=True,blank=True)
-    password = models.CharField(max_length=100,null=True,blank=True)
     elapsed_time = models.DurationField(null=True,blank=True)
-    username = models.CharField(max_length=100,null=True,blank=True)
-    
+    user =models.OneToOneField(User, null=True,blank=True,on_delete=models.CASCADE)
+
+
     def __str__(self): 
         return str(self.Nom)

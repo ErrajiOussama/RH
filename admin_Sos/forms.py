@@ -40,22 +40,21 @@ class Collaborateurform(forms.ModelForm):
             'stop_time': forms.DateTimeInput(attrs={'class': 'form-control'}),
             'password': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
+
+        
 collaborateur = apps.get_model('admin_Sos','Collaborateur')
+
 class registerForm(UserCreationForm):
- username = None
- def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-    self.fields['username'].widget.attrs.update({'placeholder': ('Votre nom d\'utilisateur...')})
-    self.fields['password1'].widget.attrs.update({'placeholder': ('Votre mot de passe...')})
-    self.fields['password2'].widget.attrs.update({'placeholder': ('Repeter votre mot de passe...')})
+    id = forms.IntegerField(label='Collaborator ID', required=False)    
+
  
- def clean(self):
-    username = self.cleaned_data.get('username')
-    if User.objects.filter(username=username).exists():
-        raise ValidationError("Username exists")
-    return self.cleaned_data
- #group = forms.ModelChoiceField(queryset=Group.objects.get(name="Client"), required=False)
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Username exists")
+        return self.cleaned_data
+    #group = forms.ModelChoiceField(queryset=Group.objects.get(name="Client"), required=False)
  
- class Meta:
-     model = User
-     fields = ['username','password1','password2']
+    class Meta:
+        model = User
+        fields = ['username','password1','password2','id']
