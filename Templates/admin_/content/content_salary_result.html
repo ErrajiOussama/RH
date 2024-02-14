@@ -1,0 +1,95 @@
+{% load static %}
+
+<div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Agent</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">salaire/heure</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nbre d'heures Travaillees</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Avance sur salaire</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prime Produit</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire finale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for C in collaborateur %}
+                  <tr>
+                    <td>
+                      <div class="d-flex px-2 py-1">
+                        <div class="d-flex flex-column justify-content-center">
+                          <h6 class="mb-0 text-sm">{{ C.Nom }}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ TH }}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ C.Taux_Horaire }}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_Avancee }}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ C.Prime }}</p>
+                    </td>                       
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ C.salaire_finale }}</p>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid py-4">
+        <!-- Your existing code for the table and form goes here -->
+        <button id="downloadCsvBtn" class="btn btn-primary">Download CSV</button>
+        </div>
+      
+      </div>
+    </div>
+   
+    <script>
+      document.getElementById("downloadCsvBtn").addEventListener("click", function() {
+          // Extract table data
+          var table = document.querySelector('.table');
+          var rows = Array.from(table.querySelectorAll("tr"));
+          
+          // Extract table headers
+          var headers = Array.from(table.querySelectorAll("th")).map(function(header) {
+              return header.innerText.trim();
+          });
+          
+          // Generate CSV content
+          var csvContent = "data:text/csv;charset=utf-8,";
+          
+          // Add table headers to CSV
+          csvContent += headers.join(",") + "\n";
+          
+          // Add table data to CSV
+          rows.forEach(function(row, rowIndex) {
+              var rowData = [];
+              var cols = Array.from(row.querySelectorAll("td"));
+              cols.forEach(function(col, colIndex) {
+                  rowData.push(col.innerText.trim());
+              });
+              csvContent += rowData.join(",") + "\n";
+          });
+          
+          // Trigger download
+          var encodedUri = encodeURI(csvContent);
+          var link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", "PAIE.csv");
+          document.body.appendChild(link); // Required for Firefox
+          link.click();
+      });
+  </script>

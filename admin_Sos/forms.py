@@ -18,7 +18,6 @@ class Collaborateurform(forms.ModelForm):
             'Nom': forms.TextInput(attrs={'class': 'form-control'}),
             'Prenom': forms.TextInput(attrs={'class': 'form-control'}),
             'Sexe': forms.TextInput(attrs={'class': 'form-control'}),
-            'Age': forms.NumberInput(attrs={'class': 'form-control'}),
             'Situation_familiale': forms.TextInput(attrs={'class': 'form-control'}),
             'Nombre_d_enfants': forms.NumberInput(attrs={'class': 'form-control'}),
             'N_CIN': forms.TextInput(attrs={'class': 'form-control'}),

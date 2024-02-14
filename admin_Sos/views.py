@@ -9,7 +9,7 @@ from admin_Sos.forms import *
 from django.utils import timezone
 from .decorators import *
 
-
+@login_required(login_url='login')
 def IndexView(request):
     return render(request,'Agent/index.html')
 
@@ -55,7 +55,7 @@ def registerPageView(request):
 @login_required(login_url='login')
 @admin_only
 def Adimn_view(request):
-    collaborateur=Collaborateur.objects.all().count()
+    collaborateur=Collaborateur.objects.get(Statut='Actif').count()
     context={
         'collaborateur':collaborateur,
     }
@@ -110,14 +110,43 @@ def DelCView(request,id):
 def logoutview(request):
     logout(request)
     return redirect('home')
-
+""""
 @login_required(login_url='login')
 def chrono_view(request):
     if request.method == 'POST':
         start_time = timezone.now()
         stop_time = timezone.now()  # You may need to modify this logic depending on your requirements
         elapsed_time = stop_time - start_time
-        chrono_data = Collaborateur.objects.create(start_time=start_time, stop_time=stop_time, elapsed_time=elapsed_time)
+        chrono_data = Collaborateur.objects.create()
         chrono_data.save()
         return redirect('chrono')  # Redirect to the chrono page after saving the data
     return render(request, 'Agent/chrono.html')
+"""
+@admin_only
+def Salaries(request):
+    th= 0
+    if request.method == 'POST':
+        th_f = float(request.POST['TH'])
+        collaborateurs = Collaborateur.objects.filter(Poste='Agent')  # Assuming 'post' is a field in your Collaborateur model
+        
+        # Calculate salaries for each agent
+        for collaborateur in collaborateurs:
+            print(collaborateur.Nom)
+            th = collaborateur.Salaire_base/th_f
+            hours_of_work = collaborateur.Taux_Horaire  # Assuming 'Horaire' is the hours of work for each collaborateur
+            prime = collaborateur.Prime  # Assuming 'Prime' is the prime for each collaborateur
+            PrimeAvance=collaborateur.Salaire_Avancee
+            print(th)
+            # Calculate the salary for this collaborateur
+            salary = hours_of_work * th + prime -PrimeAvance
+
+            # Update the collaborateur object with the calculated salary
+            collaborateur.salaire_finale = salary  # Assuming you have a field 'salaire' in your Collaborateur model
+            collaborateur.save()
+            print(collaborateur.salaire_finale)
+        context = {
+            'collaborateur': collaborateurs,
+            'TH': th,
+        }
+        return render(request, 'admin_/salary_result.html', context)
+    return render(request, 'admin_/Salaries.html')

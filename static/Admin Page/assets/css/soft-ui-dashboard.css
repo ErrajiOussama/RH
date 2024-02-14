@@ -50,8 +50,8 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #67748e;
-  background-color: #fff;
+  color: #fff;
+  background-color: black;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -20049,7 +20049,7 @@ p {
 }
 
 .bg-gray-100 {
-  background-color: #f8f9fa !important;
+  background-color: black !important;
 }
 
 .bg-gray-200 {

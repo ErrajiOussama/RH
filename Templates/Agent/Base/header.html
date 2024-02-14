@@ -1,39 +1,20 @@
 {% load static %}
 <body>
   <!-- Topbar Start -->
-  <div
-    class="container-fluid bg-dark text-white-50 py-2 px-0 d-none d-lg-block"
-  >
-    <div class="row gx-0 align-items-center">
-      <div class="col-lg-7 px-5 text-start">
-        <div class="h-100 d-inline-flex align-items-center me-4">
-          <small class="fa fa-phone-alt me-2"></small>
-          <small>+0000000000000</small>
-        </div>
-        <div class="h-100 d-inline-flex align-items-center me-4">
-          <small class="far fa-envelope-open me-2"></small>
-          <small>************</small>
-        </div>
-        <div class="h-100 d-inline-flex align-items-center me-4">
-          <small class="far fa-clock me-2"></small>
-          <small>Mon - Fri : 09 AM - 09 PM</small>
-        </div>
-      </div>
-    </div>
-  </div>
+  
   <!-- Topbar End -->
 
   <!-- Navbar Start -->
   <nav
     class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5"
   >
-    <a href="{% url 'home_admin' %}" class="navbar-brand d-flex align-items-center">
+    <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center">
       <h1 class="m-0">
         <img
           class="img-fluid me-3"
           src="{% static 'Site de Societe/img/icon/icon_1.jpg' %}"
           alt=""
-        />SOS JOB
+        />
       </h1>
     </a>
     <button
@@ -46,9 +27,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <div class="navbar-nav mx-auto bg-light rounded pe-4 py-3 py-lg-0">
-        <a href="{% url 'chrono' %}" class="nav-item nav-link active">Home</a>
-        <a href="" class="nav-item nav-link">*</a>
-        <a href="" class="nav-item nav-link">*</a>
+        <a href="{% url 'home' %}" class="nav-item nav-link active">Home</a>
+        <a href="" class="nav-item nav-link">Travail</a>
+        <a href="{% url 'home_admin' %}" class="nav-item nav-link">Admin Page</a>
+        <!--
         <div class="nav-item dropdown">
           <a
             href="#"
@@ -57,14 +39,14 @@
             >Pages</a
           >
           <div class="dropdown-menu bg-light border-0 m-0">
-            <a href="" class="dropdown-item">*</a>
+            <a href="" class="dropdown-item"></a>
             <a href="" class="dropdown-item">*</a>
             <a href="" class="dropdown-item">*</a>
             <a href="" class="dropdown-item">*</a>
             <a href="" class="dropdown-item">*</a>
           </div>
         </div>
-        <a href="" class="nav-item nav-link">*</a>
+        -->
       </div>
     </div>
     {% if request.user.is_authenticated%}

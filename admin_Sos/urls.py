@@ -11,5 +11,5 @@ urlpatterns = [
   path('AddC/',views.AddCView,name="AddC"),
   path('EditC/<int:id>',views.EditCView,name="EditC"),
   path('DelC/<int:id>',views.DelCView,name="DelC"),
-  path('Chrono',views.chrono_view,name='chrono')
+  path('Salaire/',views.Salaries ,name="salaire"),
 ]

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 class Collaborateur(models.Model):
     Statut = models.CharField(max_length=10,null=True,blank=True)
@@ -26,12 +27,47 @@ class Collaborateur(models.Model):
     Date_d_entrée = models.DateField(null=True,blank=True)
     Date_de_Sortie = models.DateField(null=True,blank=True)
     Taux_Horaire= models.FloatField(null=True,blank=True)
-    Prime_Avancee = models.FloatField(null=True,blank=True)
-    start_time = models.DateTimeField(null=True,blank=True)
-    stop_time = models.DateTimeField(null=True,blank=True)
-    elapsed_time = models.DurationField(null=True,blank=True)
+    Salaire_Avancee = models.FloatField(null=True,blank=True)
+    salaire_finale = models.IntegerField(null=True,blank=True)
+    anciennetee = models.IntegerField(null=True, blank=True)
     user =models.OneToOneField(User, null=True,blank=True,on_delete=models.CASCADE)
 
+    def calculate_work_duration_in_months(self):
+        if self.Date_d_entrée and self.Date_de_Sortie:
+            start_date = self.Date_d_entrée
+            end_date = self.Date_de_Sortie
 
+            years = end_date.year - start_date.year
+            months = end_date.month - start_date.month
+
+            # Calculate total months worked
+            total_months_worked = years * 12 + months
+
+            # Adjust for cases where the end date day is before the start date day
+            if end_date.day < start_date.day:
+                total_months_worked -= 1
+
+            return total_months_worked
+        else:
+            return None  # Or handle the case where one of the dates is missing
+
+
+    def save(self, *args, **kwargs):
+        
+        work_duration_in_months = self.calculate_work_duration_in_months()
+
+        # Save work duration in months to the field
+        if work_duration_in_months is not None:
+            self.work_duration_in_months = work_duration_in_months
+
+        if self.Date_de_naissance:
+            today = date.today()
+            age = today.year - self.Date_de_naissance.year - ((today.month, today.day) < (self.Date_de_naissance.month, self.Date_de_naissance.day))
+            self.Age = age
+            
+        super().save(*args, **kwargs)
+    
     def __str__(self): 
         return str(self.Nom)
+    
+    
