@@ -6,6 +6,15 @@
               <h6>Collaborateur<br>
               <a href="{% url 'AddC' %}" class="fa fa-plus text-secondary mb-3"></a>
               </h6>
+              <div class="header_search_form_container">
+                <form role="form text-center" action="{% url 'table' %}" method="GET"> 
+                  {{ myFilter.form }}
+                  <div class="mb-3 text-center">
+                    <input type="search" name="nom" class="form-control">
+                    <button type="submit" style = 'margin-top : 20px' value="Submit" class="btn btn-primary">search</button>
+                  </div>
+                </form>
+            </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
@@ -23,18 +32,20 @@
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre_d_enfants</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N_CIN</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N_Passeport</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Adresse</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ville</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">E_mail</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N_de_téléphone</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">RIB</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N_CNSS</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Type_de_contrat</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Poste</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date d entrée</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date de sortie</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Primes</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">salaire/heure</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">avance salaire</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ancienneté</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire_base</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Motif de départ</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Commentaire</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -78,6 +89,9 @@
                         <p class="text-xs font-weight-bold mb-0">{{ C.N_Passeport }}</p>
                       </td>
                       <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Adresse_postale }}</p>
+                      </td>
+                      <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.Ville }}</p>
                       </td>
                       <td class="align-middle text-center">
@@ -88,6 +102,9 @@
                       </td>
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.RIB }}</p>
+                      </td>
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.N_CNSS }}</p>
                       </td>
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.Type_de_contrat }}</p>
@@ -102,17 +119,17 @@
                         <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_Sortie }}</p>
                       </td>
                       <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Prime }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.anciennetee }}</p>
                       </td>  
-                      <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Taux_Horaire }}</p>
-                      </td> 
-                      <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_Avancee }}</p>
-                      </td>
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_base }}</p>
                       </td>   
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Motif_de_départ }}</p>
+                      </td>  
+                      <td class="align-middle text-center">
+                        <p class="text-xs font-weight-bold mb-0">{{ C.Commentaire }}</p>
+                      </td>  
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ p.id_Collaboratteur.Nom }}</p>
                       </td>

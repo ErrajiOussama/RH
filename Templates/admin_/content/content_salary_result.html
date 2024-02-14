@@ -4,6 +4,11 @@
     <div class="row">
       <div class="col-12">
         <div class="card mb-4">
+          <div class="card-header pb-0">
+            <h6>Tableau de paiement pour {{ moin }} <br>
+              Taux Des Horaires {{ TH_f }} pour le moins {{ moin }}
+            </h6>
+          </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
               <table class="table align-items-center mb-0">
@@ -28,7 +33,7 @@
                       </div>
                     </td>
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ TH }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ C.S_H }}</p>
                     </td>
                     <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ C.Taux_Horaire }}</p>
@@ -62,18 +67,18 @@
           // Extract table data
           var table = document.querySelector('.table');
           var rows = Array.from(table.querySelectorAll("tr"));
-          
+  
           // Extract table headers
           var headers = Array.from(table.querySelectorAll("th")).map(function(header) {
               return header.innerText.trim();
           });
-          
+  
           // Generate CSV content
           var csvContent = "data:text/csv;charset=utf-8,";
-          
+  
           // Add table headers to CSV
           csvContent += headers.join(",") + "\n";
-          
+  
           // Add table data to CSV
           rows.forEach(function(row, rowIndex) {
               var rowData = [];
@@ -83,12 +88,16 @@
               });
               csvContent += rowData.join(",") + "\n";
           });
-          
-          // Trigger download
+  
+          // Get current month directly within JavaScript
+          var currentDate = new Date();
+          var currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+  
+          // Trigger download with month in file name
           var encodedUri = encodeURI(csvContent);
           var link = document.createElement("a");
           link.setAttribute("href", encodedUri);
-          link.setAttribute("download", "PAIE.csv");
+          link.setAttribute("download", "PAIE_" + currentMonth + ".csv");
           document.body.appendChild(link); // Required for Firefox
           link.click();
       });

@@ -6,8 +6,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
-from django.utils import timezone
 from .decorators import *
+from datetime import datetime
+from django.utils.translation import activate
+from .filter import * 
 
 @login_required(login_url='login')
 def IndexView(request):
@@ -55,7 +57,7 @@ def registerPageView(request):
 @login_required(login_url='login')
 @admin_only
 def Adimn_view(request):
-    collaborateur=Collaborateur.objects.get(Statut='Actif').count()
+    collaborateur=Collaborateur.objects.filter(Statut='ACTIF').count()
     context={
         'collaborateur':collaborateur,
     }
@@ -64,11 +66,16 @@ def Adimn_view(request):
 @login_required(login_url='login')
 @admin_only
 def TableView(request):
-    collaborateur=Collaborateur.objects.all()
-    context={
-        'collaborateur':collaborateur,     
-    }
-    return render(request,'admin_/tables.html',context)
+    context = Collaborateur.objects.all()
+    myFilter = Cola_filter(request.GET,queryset=context)
+    context_all=myFilter.qs
+    """if 'nom' in request.GET:
+        nom_query = request.GET['nom']
+        context = Collaborateur.objects.filter(Nom__icontains=nom_query)
+    else:
+        context = Collaborateur.objects.all()
+    """
+    return render(request, 'admin_/tables.html', {'collaborateur': context_all, 'myFilter':myFilter})
 
 @login_required(login_url='login')
 @admin_only
@@ -124,14 +131,17 @@ def chrono_view(request):
 """
 @admin_only
 def Salaries(request):
-    th= 0
     if request.method == 'POST':
         th_f = float(request.POST['TH'])
         collaborateurs = Collaborateur.objects.filter(Poste='Agent')  # Assuming 'post' is a field in your Collaborateur model
-        
-        # Calculate salaries for each agent
+        activate('fr')
+    # Get the current date
+        current_date = datetime.now()
+    # Get the name of the current month in French
+        month_name = current_date.strftime('%B')
         for collaborateur in collaborateurs:
             print(collaborateur.Nom)
+            
             th = collaborateur.Salaire_base/th_f
             hours_of_work = collaborateur.Taux_Horaire  # Assuming 'Horaire' is the hours of work for each collaborateur
             prime = collaborateur.Prime  # Assuming 'Prime' is the prime for each collaborateur
@@ -139,14 +149,15 @@ def Salaries(request):
             print(th)
             # Calculate the salary for this collaborateur
             salary = hours_of_work * th + prime -PrimeAvance
-
-            # Update the collaborateur object with the calculated salary
+            collaborateur.S_H = th
+           # Update the collaborateur object with the calculated salary
             collaborateur.salaire_finale = salary  # Assuming you have a field 'salaire' in your Collaborateur model
             collaborateur.save()
             print(collaborateur.salaire_finale)
         context = {
             'collaborateur': collaborateurs,
-            'TH': th,
+            'TH_f': th_f,
+            'moin' : month_name
         }
         return render(request, 'admin_/salary_result.html', context)
     return render(request, 'admin_/Salaries.html')
