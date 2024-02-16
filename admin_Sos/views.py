@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
@@ -124,12 +125,13 @@ def EditCView(request,id):
 @admin_only
 def DelCView(request,id):
     dele=Collaborateur.objects.get(id=id)
-    dele.delete()
-    cola=Collaborateur.objects.all()
+    if request.method == "POST":
+        dele.delete()
+        return redirect('table')
     context={
-            'collaborateur':cola,
+            'Collaborateur':dele,
         }
-    return render(request,'admin_/tables.html',context)
+    return render(request,'admin_/content/delet.html',context)
 
 def logoutview(request):
     logout(request)
@@ -152,29 +154,30 @@ def Salaries(request):
         th_f = float(request.POST['TH'])
         collaborateurs = Collaborateur.objects.filter(Poste='Agent')  # Assuming 'post' is a field in your Collaborateur model
         activate('fr')
-    # Get the current date
+        # Get the current date
         current_date = datetime.now()
-    # Get the name of the current month in French
+        # Get the name of the current month in French
         month_name = current_date.strftime('%B')
         for collaborateur in collaborateurs:
             print(collaborateur.Nom)
             
-            th = collaborateur.Salaire_base/th_f
+            th = round(collaborateur.Salaire_base / th_f, 2)
             hours_of_work = collaborateur.Taux_Horaire  # Assuming 'Horaire' is the hours of work for each collaborateur
             prime = collaborateur.Prime  # Assuming 'Prime' is the prime for each collaborateur
-            PrimeAvance=collaborateur.Salaire_Avancee
+            PrimeAvance = collaborateur.Salaire_Avancee
             print(th)
             # Calculate the salary for this collaborateur
-            salary = hours_of_work * th + prime -PrimeAvance
+            salary = round(hours_of_work * th + prime - PrimeAvance, 2)
             collaborateur.S_H = th
-           # Update the collaborateur object with the calculated salary
+            # Update the collaborateur object with the calculated salary
             collaborateur.salaire_finale = salary  # Assuming you have a field 'salaire' in your Collaborateur model
             collaborateur.save()
             print(collaborateur.salaire_finale)
         context = {
             'collaborateur': collaborateurs,
             'TH_f': th_f,
-            'moin' : month_name
+            'moin': month_name
         }
         return render(request, 'admin_/salary_result.html', context)
     return render(request, 'admin_/Salaries.html')
+

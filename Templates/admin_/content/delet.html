@@ -1,0 +1,24 @@
+{% extends 'admin_/Base/homebase_admin.html' %}
+{% block title %}Delete Produit{% endblock  %}
+{% block body %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Are you sure you want to delete "{{ Collaborateur }}"?</h5>
+          <form action="{% url 'DelC' Collaborateur.id %}" method="POST">
+            {% csrf_token %}
+            <div class="text-center">
+              <a href="{% url 'table' %}" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-danger">Confirm</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

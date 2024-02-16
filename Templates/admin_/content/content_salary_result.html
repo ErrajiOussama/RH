@@ -10,7 +10,7 @@
             </h6>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
-            <div class="table-responsive p-0"  style="height: 400px; overflow-y: auto;">
+            <div class="table-responsive p-0" style="height: 400px; overflow-y: auto;">
               <table class="table align-items-center mb-0">
                 <thead>
                   <tr>
@@ -77,32 +77,39 @@
           // Extract table data
           var table = document.querySelector('.table');
           var rows = Array.from(table.querySelectorAll("tr"));
-  
+    
           // Extract table headers
           var headers = Array.from(table.querySelectorAll("th")).map(function(header) {
               return header.innerText.trim();
           });
-  
+    
           // Generate CSV content
           var csvContent = "data:text/csv;charset=utf-8,";
-  
+    
           // Add table headers to CSV
-          csvContent += headers.join(",") + "\n";
-  
+          csvContent += headers.map(header => `"${header}"`).join(",") + "\n";
+    
           // Add table data to CSV
           rows.forEach(function(row, rowIndex) {
               var rowData = [];
               var cols = Array.from(row.querySelectorAll("td"));
               cols.forEach(function(col, colIndex) {
-                  rowData.push(col.innerText.trim());
+                  // Format numerical values as strings with decimal separator
+                  var cellData = col.innerText.trim();
+                  // Check if the cell data is numeric
+                  if (!isNaN(cellData)) {
+                      // Format numeric values with decimal separator (comma)
+                     
+                  }
+                  rowData.push(`"${cellData}"`);
               });
               csvContent += rowData.join(",") + "\n";
           });
-  
+    
           // Get current month directly within JavaScript
           var currentDate = new Date();
           var currentMonth = currentDate.toLocaleString('default', { month: 'long' });
-  
+    
           // Trigger download with month in file name
           var encodedUri = encodeURI(csvContent);
           var link = document.createElement("a");
@@ -111,4 +118,7 @@
           document.body.appendChild(link); // Required for Firefox
           link.click();
       });
-  </script>
+    </script>
+    
+    
+    
