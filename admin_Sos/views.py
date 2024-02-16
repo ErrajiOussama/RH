@@ -57,9 +57,18 @@ def registerPageView(request):
 @login_required(login_url='login')
 @admin_only
 def Adimn_view(request):
-    collaborateur=Collaborateur.objects.filter(Statut='ACTIF').count()
+    collaborateur_inactif=Collaborateur.objects.filter(Statut='INACTIF').count()
+    collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
+    collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
+    collaborateur_Women=Collaborateur.objects.filter(Sexe='F').count()
+    print(collaborateur_man)
+    print(collaborateur_Women)
+    
     context={
-        'collaborateur':collaborateur,
+        'collaborateur_Actif':collaborateur_actif,
+        'collaborateur_Inactif':collaborateur_inactif,
+        'collaborateur_man':collaborateur_man,
+        'collaborateur_women':collaborateur_Women,
     }
     return render(request,'admin_/home_admin.html',context)
 
@@ -68,14 +77,14 @@ def Adimn_view(request):
 def TableView(request):
     context = Collaborateur.objects.all()
     myFilter = Cola_filter(request.GET,queryset=context)
-    context_all=myFilter.qs
-    """if 'nom' in request.GET:
-        nom_query = request.GET['nom']
-        context = Collaborateur.objects.filter(Nom__icontains=nom_query)
+    context=myFilter.qs
+    if 'id' in request.GET:
+        nom_query = request.GET['id']
+        context = Collaborateur.objects.filter(id=nom_query)
     else:
         context = Collaborateur.objects.all()
-    """
-    return render(request, 'admin_/tables.html', {'collaborateur': context_all, 'myFilter':myFilter})
+    
+    return render(request, 'admin_/tables.html', {'collaborateur': context, 'myFilter':myFilter,})
 
 @login_required(login_url='login')
 @admin_only
@@ -89,6 +98,14 @@ def AddCView(request):
         form = Collaborateurform()
     return render(request,'admin_/addC.html',{'form':form})
 
+@login_required(login_url='login')
+@admin_only
+def Form_EDS(request,id):
+    instance= Collaborateur.objects.get(id=id)
+    if instance:
+        Nom=instance.Nom
+        Prenom=instance.Prenom
+    return render(request,'admin_/Form.html',{'Nom':Nom , 'Prenom':Prenom})
 
 @login_required(login_url='login')
 @admin_only

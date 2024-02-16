@@ -26,10 +26,23 @@ class Collaborateur(models.Model):
         ('CDI','CDI'),
     )
 
+    statut_sexe = (
+        ('H','H'),
+        ('F','F'),
+    )
+
+    statut_Poste = (
+        ('Agent','Agent'),
+        ('Admin','Admin'),
+        ('RH','RH'),
+    )
+
+
+
     Statut = models.CharField(max_length=10,null=True,blank=True,choices=STATUT_statut)
-    Nom = models.CharField(max_length=10,null=True,blank=True)
-    Prenom = models.CharField(max_length=10,null=True,blank=True)
-    Sexe = models.CharField(max_length=5,null=True,blank=True)
+    Nom = models.CharField(max_length=50,null=True,blank=True)
+    Prenom = models.CharField(max_length=50,null=True,blank=True)
+    Sexe = models.CharField(max_length=5,null=True,blank=True,choices=statut_sexe)
     Date_de_naissance = models.DateField(null=True,blank=True)
     Age = models.PositiveIntegerField(null=True,blank=True)
     Situation_familiale = models.CharField(max_length=10, null=True,blank=True)
@@ -37,7 +50,7 @@ class Collaborateur(models.Model):
     N_CIN =models.CharField(max_length=12 ,null=True,blank=True)
     N_Passeport=models.CharField(max_length=30 ,null=True,blank=True)
     Nationalité=models.CharField(max_length=20,null=True,blank=True)
-    Adresse_postale=models.CharField(max_length=50,null=True,blank=True)
+    Adresse_postale=models.CharField(max_length=200,null=True,blank=True)
     Ville=models.CharField(max_length=20,null=True,blank=True)
     E_mail= models.EmailField(null=True,blank=True)
     N_de_téléphone=models.CharField(max_length=20,null=True,blank=True)
@@ -45,12 +58,12 @@ class Collaborateur(models.Model):
     N_CNSS= models.CharField(max_length=20,null=True,blank=True)
     Type_de_contrat= models.CharField(max_length=10,null=True,blank=True,choices=Contart)
     Salaire_base = models.PositiveBigIntegerField(null=True,blank=True)
-    Prime = models.FloatField( null=True,blank=True)
-    Poste = models.CharField(max_length=10,null=True,blank=True)
+    Prime = models.FloatField(default=0,null=True,blank=True)
+    Poste = models.CharField(max_length=10,null=True,blank=True,choices=statut_Poste)
     Date_d_entrée = models.DateField(null=True,blank=True)
     Date_de_Sortie = models.DateField(null=True,blank=True)
-    Taux_Horaire= models.FloatField(null=True,blank=True)
-    Salaire_Avancee = models.FloatField(null=True,blank=True)
+    Taux_Horaire= models.FloatField(default=0,null=True,blank=True)
+    Salaire_Avancee = models.FloatField(default=0,null=True,blank=True)
     salaire_finale = models.IntegerField(null=True,blank=True)
     anciennetee = models.IntegerField(null=True, blank=True)
     S_H = models.FloatField(null=True, blank=True)

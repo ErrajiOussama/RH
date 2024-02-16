@@ -10,11 +10,12 @@
             </h6>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
-            <div class="table-responsive p-0">
+            <div class="table-responsive p-0"  style="height: 400px; overflow-y: auto;">
               <table class="table align-items-center mb-0">
                 <thead>
                   <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Agent</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire de Base</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">salaire/heure</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nbre d'heures Travaillees</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Avance sur salaire</th>
@@ -33,6 +34,10 @@
                       </div>
                     </td>
                     <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_base }}</p>
+                    </td>
+
+                    <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ C.S_H }}</p>
                     </td>
                     <td class="align-middle text-center">
@@ -47,6 +52,11 @@
                     <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ C.salaire_finale }}</p>
                     </td>
+                    <td class="align-middle">
+                      <a href="{% url 'EDS' id=C.id  %}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                        EDS
+                      </a> 
+                    </td> 
                   </tr>
                   {% endfor %}
                 </tbody>
