@@ -35,6 +35,7 @@ def loginPageView(request):
 def registerPageView(request):    
     if request.POST:
         formRegister = registerForm(request.POST)
+        print("ok")
         if request.POST.get("sign-up"):
             group=request.POST['group']
             if formRegister.is_valid():
@@ -43,6 +44,7 @@ def registerPageView(request):
                     try:
                         collaborateur = Collaborateur.objects.get(id=id)
                         user = formRegister.save()
+                        
                         user.groups.add(Group.objects.get(name=group))
                         collaborateur.user = user
                         collaborateur.save()
@@ -84,7 +86,6 @@ def TableView(request):
         context = Collaborateur.objects.filter(id=nom_query)
     else:
         context = Collaborateur.objects.all()
-    
     return render(request, 'admin_/tables.html', {'collaborateur': context, 'myFilter':myFilter,})
 
 @login_required(login_url='login')
