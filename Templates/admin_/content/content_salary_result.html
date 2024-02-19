@@ -5,8 +5,8 @@
       <div class="col-12">
         <div class="card mb-4">
           <div class="card-header pb-0">
-            <h6>Tableau de paiement pour {{ moin }} <br>
-              Taux Des Horaires {{ TH_f }} pour le moins {{ moin }}
+            <h6>
+              PAIE {{ moin }} 2024 : {{ TH_f }} 
             </h6>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
@@ -53,9 +53,11 @@
                       <p class="text-xs font-weight-bold mb-0">{{ C.salaire_finale }}</p>
                     </td>
                     <td class="align-middle">
-                      <a href="{% url 'EDS' id=C.id  %}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                      <form action="{% url 'EDS' id=C.id %}" method="get">
+                      <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
                         EDS
-                      </a> 
+                      </button> 
+                    </form>
                     </td> 
                   </tr>
                   {% endfor %}
@@ -77,39 +79,42 @@
           // Extract table data
           var table = document.querySelector('.table');
           var rows = Array.from(table.querySelectorAll("tr"));
-    
+  
           // Extract table headers
           var headers = Array.from(table.querySelectorAll("th")).map(function(header) {
               return header.innerText.trim();
           });
-    
+  
           // Generate CSV content
           var csvContent = "data:text/csv;charset=utf-8,";
-    
+  
           // Add table headers to CSV
-          csvContent += headers.map(header => `"${header}"`).join(",") + "\n";
-    
+          csvContent += headers.join(",") + "\n";
+  
           // Add table data to CSV
           rows.forEach(function(row, rowIndex) {
               var rowData = [];
               var cols = Array.from(row.querySelectorAll("td"));
               cols.forEach(function(col, colIndex) {
-                  // Format numerical values as strings with decimal separator
-                  var cellData = col.innerText.trim();
-                  // Check if the cell data is numeric
-                  if (!isNaN(cellData)) {
-                      // Format numeric values with decimal separator (comma)
-                     
+                  // Skip the last column if its value is "EDS"
+                  if (colIndex !== cols.length - 1 || col.innerText.trim() !== "EDS") {
+                      // Format numerical values as strings with decimal separator
+                      var cellData = col.innerText.trim();
+                      // Check if the cell data is numeric
+                      if (!isNaN(cellData)) {
+                          // Format numeric values with decimal separator (comma)
+                          cellData = cellData.replace('.', ',');
+                      }
+                      rowData.push(`"${cellData}"`);
                   }
-                  rowData.push(`"${cellData}"`);
               });
               csvContent += rowData.join(",") + "\n";
           });
-    
+  
           // Get current month directly within JavaScript
           var currentDate = new Date();
           var currentMonth = currentDate.toLocaleString('default', { month: 'long' });
-    
+  
           // Trigger download with month in file name
           var encodedUri = encodeURI(csvContent);
           var link = document.createElement("a");
@@ -118,7 +123,5 @@
           document.body.appendChild(link); // Required for Firefox
           link.click();
       });
-    </script>
-    
-    
-    
+  </script>
+  

@@ -12,30 +12,30 @@
             <img src="{% static 'Site de Societe/img/icon/icon_1.jpg' %}" alt="Logo" width="100" height="100">
         </div>
         <div>
-            Mois : JANVIER 2024
+            Mois : {{moins}} 2024
         </div>    
     </div>
 
-    <div style="margin:0px 100px">
+    <div style="margin: auto; width:600px">
         <div style="margin:30px"></div>
 
     <table border="1" style="width:100%; border-collapse: collapse;">
         <th colspan="2">Entretien EDS</th>
         <tr>
-            <td style="width:30%">Nom et prenom</td>
-            <td></td>
+            <td style="width:40%">Nom et prenom</td>
+            <td style="text-align : center">{{collaborateur.Nom}} {{collaborateur.Prenom}}</td>
         </tr>
         <tr>
-            <td style="width:30%">Date d'entretien</td>
-            <td></td>
+            <td style="width:40%">Date d'entretien</td>
+            <td style="text-align : center"></td>
         </tr>
         <tr>
-            <td style="width:30%">Activite</td>
-            <td></td>
+            <td style="width:40%">Activite</td>
+            <td style="text-align : center">Production</td>
         </tr>
         <tr>
-            <td style="width:30%">Manager</td>
-            <td></td>
+            <td style="width:40%">Manager</td>
+            <td style="text-align : center"></td>
         </tr>
     </table>
 
@@ -43,40 +43,40 @@
 
     <table border="1" style="width:100%; border-collapse: collapse;">
         <tr>
-            <td style="width:30%">Salaire de base</td>
-            <td></td>
+            <td style="width:40%">Salaire de base</td>
+            <td style="text-align : center">{{collaborateur.Salaire_base}}</td>
         </tr>
         <tr>
-            <td style="width:30%">Nbre de retards/absences</td>
-            <td></td>
+            <td style="width:40%">Nbre de retards/absences</td>
+            <td style="text-align : center"></td>
         </tr>
         <tr>
-            <td style="width:30%">Nombre de jrs travailles</td>
-            <td></td>
+            <td style="width:40%">Nombre d'heures planifiées</td>
+            <td style="text-align : center"></td>
         </tr>
         <tr>
-            <td style="width:30%">Nombre d'heures travaillées</td>
-            <td></td>
+            <td style="width:40%">Nombre d'heures travaillées</td>
+            <td style="text-align : center">{{ collaborateur.Taux_Horaire }}</td>
         </tr>
         <tr>
-            <td style="width:30%">Base journalière
+            <td style="width:40%">Base journalière
             </td>
-            <td></td>
+            <td style="text-align : center">{{ collaborateur.S_H }}</td>
         </tr>
         <tr>
-            <td style="width:30%">Prime de productivité
+            <td style="width:40%">Prime de productivité
             </td>
-            <td></td>
+            <td style="text-align : center">{{ collaborateur.Prime }}</td>
         </tr>
         <tr>
-            <td style="width:30%">Avance sur salaire
+            <td style="width:40%">Avance sur salaire
             </td>
-            <td></td>
+            <td style="text-align : center">{{ collaborateur.Salaire_Avancee }}</td>
         </tr>
         <tr>
-            <td style="width:30%">Salaire à payer
+            <td style="width:40%">Salaire à payer
             </td>
-            <td></td>
+            <td style="text-align : center">{{ collaborateur.salaire_finale }}</td>
         </tr>
     </table>
 
@@ -108,7 +108,14 @@
             </td>
         </tr>
     </table>
+    <form action="{% url 'generate_pdf' id=collaborateur.id  %}" method="get">
+        {% csrf_token %}  
+        <button type="submit" value="submit">
+            Telecharger PDF
+        </button> 
+      </form>
     <div style="margin:30px"></div>
     </div>
+
 </body>
 </html>

@@ -13,4 +13,5 @@ urlpatterns = [
   path('EditC/<int:id>',views.EditCView,name="EditC"),
   path('DelC/<int:id>',views.DelCView,name="DelC"),
   path('Salaire/',views.Salaries ,name="salaire"),
+  path('generate_pdf/<int:id>', views.generate_pdf, name='generate_pdf'),
 ]

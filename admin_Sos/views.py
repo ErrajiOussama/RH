@@ -10,7 +10,11 @@ from admin_Sos.forms import *
 from .decorators import *
 from datetime import datetime
 from django.utils.translation import activate
+from django.template.loader import get_template
 from .filter import * 
+from xhtml2pdf import pisa
+from django.shortcuts import get_object_or_404
+
 
 @login_required(login_url='login')
 def IndexView(request):
@@ -64,6 +68,7 @@ def Adimn_view(request):
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
     collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F').count()
+    collaborateur_Turnover= round((Collaborateur.objects.filter(Statut='INACTIF').count()/Collaborateur.objects.all().count())*100, 2)
     print(collaborateur_man)
     print(collaborateur_Women)
     
@@ -72,6 +77,7 @@ def Adimn_view(request):
         'collaborateur_Inactif':collaborateur_inactif,
         'collaborateur_man':collaborateur_man,
         'collaborateur_women':collaborateur_Women,
+        'collaborateur_Turnover':collaborateur_Turnover,
     }
     return render(request,'admin_/home_admin.html',context)
 
@@ -79,14 +85,15 @@ def Adimn_view(request):
 @admin_only
 def TableView(request):
     context = Collaborateur.objects.all()
-    myFilter = Cola_filter(request.GET,queryset=context)
-    context=myFilter.qs
-    if 'id' in request.GET:
-        nom_query = request.GET['id']
-        context = Collaborateur.objects.filter(id=nom_query)
+    myFilter = Cola_filter(request.GET, queryset=context)
+
+    if 'Nom' in request.GET and request.GET['Nom']:
+        nom_query = request.GET['Nom']
+        context = Collaborateur.objects.filter(Nom=nom_query)
     else:
-        context = Collaborateur.objects.all()
-    return render(request, 'admin_/tables.html', {'collaborateur': context, 'myFilter':myFilter,})
+        context = myFilter.qs
+
+    return render(request, 'admin_/tables.html', {'collaborateur': context, 'myFilter': myFilter})
 
 @login_required(login_url='login')
 @admin_only
@@ -105,9 +112,8 @@ def AddCView(request):
 def Form_EDS(request,id):
     instance= Collaborateur.objects.get(id=id)
     if instance:
-        Nom=instance.Nom
-        Prenom=instance.Prenom
-    return render(request,'admin_/Form.html',{'Nom':Nom , 'Prenom':Prenom})
+        return render(request,'admin_/Form.html',{'collaborateur':instance})
+    return render(request,'admin_/Salaries.html')
 
 @login_required(login_url='login')
 @admin_only
@@ -182,3 +188,20 @@ def Salaries(request):
         return render(request, 'admin_/salary_result.html', context)
     return render(request, 'admin_/Salaries.html')
 
+def generate_pdf(request, id):
+    collaborateur = get_object_or_404(Collaborateur, id=id)
+        # Rendered template with collaborateur data
+    template = get_template('admin_/Form.html')
+    context = {'collaborateur': collaborateur}  # Pass the collaborateur object to the context
+    html = template.render(context)
+
+        # Create a PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="output.pdf"'
+
+        # Generate PDF
+    from xhtml2pdf import pisa
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

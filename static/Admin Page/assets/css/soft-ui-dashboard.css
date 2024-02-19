@@ -2010,7 +2010,7 @@ progress {
   --bs-table-hover-bg: rgba(0, 0, 0, 0.075);
   width: 100%;
   margin-bottom: 1rem;
-  color: #67748e;
+  color: black !important;
   vertical-align: top;
   border-color: #e9ecef;
 }
