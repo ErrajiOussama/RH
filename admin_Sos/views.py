@@ -3,7 +3,6 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
@@ -12,7 +11,6 @@ from datetime import datetime
 from django.utils.translation import activate
 from django.template.loader import get_template
 from .filter import * 
-from xhtml2pdf import pisa
 from django.shortcuts import get_object_or_404
 
 
@@ -39,7 +37,6 @@ def loginPageView(request):
 def registerPageView(request):    
     if request.POST:
         formRegister = registerForm(request.POST)
-        print("ok")
         if request.POST.get("sign-up"):
             group=request.POST['group']
             if formRegister.is_valid():
@@ -68,6 +65,10 @@ def Adimn_view(request):
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
     collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F').count()
+
+    salaire_som=0
+    for collaborateur in Collaborateur.objects.all():
+        salaire_som=collaborateur.Salaire_base
     collaborateur_Turnover= round((Collaborateur.objects.filter(Statut='INACTIF').count()/Collaborateur.objects.all().count())*100, 2)
     print(collaborateur_man)
     print(collaborateur_Women)
@@ -78,6 +79,7 @@ def Adimn_view(request):
         'collaborateur_man':collaborateur_man,
         'collaborateur_women':collaborateur_Women,
         'collaborateur_Turnover':collaborateur_Turnover,
+        'salaire max':salaire_som,
     }
     return render(request,'admin_/home_admin.html',context)
 
@@ -111,8 +113,9 @@ def AddCView(request):
 @admin_only
 def Form_EDS(request,id):
     instance= Collaborateur.objects.get(id=id)
+    salaire=Salaire.objects.get(id_Collaborateur=id)
     if instance:
-        return render(request,'admin_/Form.html',{'collaborateur':instance})
+        return render(request,'admin_/Form.html',{'collaborateur':instance,'salaire':salaire})
     return render(request,'admin_/Salaries.html')
 
 @login_required(login_url='login')
@@ -155,7 +158,9 @@ def chrono_view(request):
         return redirect('chrono')  # Redirect to the chrono page after saving the data
     return render(request, 'Agent/chrono.html')
 """
-@admin_only
+
+
+"""
 def Salaries(request):
     if request.method == 'POST':
         th_f = float(request.POST['TH'])
@@ -187,7 +192,78 @@ def Salaries(request):
         }
         return render(request, 'admin_/salary_result.html', context)
     return render(request, 'admin_/Salaries.html')
+"""
+@admin_only
+def Salaries_agent(request):
+    if request.method == 'POST':
+        th_f = float(request.POST['TH'])
+        collaborateurs = Collaborateur.objects.filter(Poste='Agent')
+        activate('fr')
+        current_date = datetime.now()
+        month_year_str = current_date.strftime('%B %Y')
+        existing_salaries = Salaire.objects.filter(Date_de_salaire=month_year_str)
 
+        # If salary entries already exist for the current month, redirect to another page
+        if existing_salaries.exists():
+            return redirect('home_admin')  # Replace 'other_page_name' with the name of your other page URL pattern
+
+        # Check if a salary entry already exists for the current month
+
+        salaries = []  # List to store all Salaire instances
+        for collaborateur in collaborateurs:
+            th = round(collaborateur.Salaire_base / th_f, 2)
+            hours_of_work = collaborateur.Taux_Horaire
+            prime = collaborateur.Prime_Produit
+            PrimeAvance = collaborateur.Avance_sur_salaire
+            salary = round(hours_of_work * th + prime - PrimeAvance, 2)
+            collaborateur.S_H = th
+            collaborateur.save()
+            
+            # Create a new instance of the Salaire model
+            salaire = Salaire.objects.create(
+                id_Collaborateur=collaborateur,
+                Date_de_salaire=month_year_str,
+                salaire_finale=salary,
+            )
+            salaries.append(salaire)
+        
+        context = {
+            'collaborateurs': collaborateurs,
+            'salaire': salaries,
+            'TH_f': th_f,
+            'moin': month_year_str
+        }
+        return render(request, 'admin_/salary_result.html', context)
+    return render(request, 'admin_/Salaries.html')
+
+@admin_only
+def Salaries_admin(request):
+    collaborateurs = Collaborateur.objects.filter(Poste='Admin')
+    activate('fr')
+    current_date = datetime.now()
+    month_year_str = current_date.strftime('%B %Y')
+    salaries = []  # List to store all Salaire instances
+    for collaborateur in collaborateurs:
+        Days_ofwork= collaborateur.Nombre_de_Jour_Travaille_Admin
+        salary = round((collaborateur.Salaire_base / 22) * Days_ofwork, 2)
+        print(salary)
+        collaborateur.save()
+            # Create a new instance of the Salaire model
+        salaire = Salaire_admin.objects.create(
+            id_Collaborateur=collaborateur,
+            Date_de_salaire=month_year_str,  # You may want to adjust this
+            salaire_finale=salary,
+        )
+        salaries.append(salaire)
+        
+    context = {
+        'collaborateurs': collaborateurs,
+        'salaire': salaries,
+        'moin': month_year_str
+        }
+    return render(request, 'admin_/Admin_salaire.html', context)
+
+"""
 def generate_pdf(request, id):
     collaborateur = get_object_or_404(Collaborateur, id=id)
         # Rendered template with collaborateur data
@@ -205,3 +281,39 @@ def generate_pdf(request, id):
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+"""
+
+import jinja2
+import pdfkit
+
+def generate_pdf(request, id):
+    collaborateur = get_object_or_404(Collaborateur, id=id)
+    context = {'collaborateur': collaborateur}
+
+    # Render Jinja2 template
+    template = get_template('admin_/Form.html')
+    html = template.render(context)
+    
+    # Configure pdfkit
+    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+
+    # Convert HTML to PDF
+    pdf_content = pdfkit.from_string(html, False, configuration=config)
+
+    # Create an HttpResponse with PDF content
+    response = HttpResponse(pdf_content, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="output.pdf"'
+    
+    return response
+
+
+def Report_salaire(request):
+    context = Collaborateur.objects.all()
+    context2 = Salaire.objects.all()
+    
+    if 'group' in request.GET and request.GET['group']:
+        group=request.GET['group']
+        print(group)
+        context2 = Salaire.objects.filter(Date_de_salaire=group)
+
+    return render(request, 'admin_/rapport.html', {'collaborateur': context,'salaire': context2})

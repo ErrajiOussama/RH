@@ -63,19 +63,18 @@ class Collaborateur(models.Model):
     N_CNSS= models.CharField(default="-",max_length=20,null=True,blank=True)
     Type_de_contrat= models.CharField(max_length=10,null=True,blank=True,choices=Contart)
     Salaire_base = models.PositiveBigIntegerField(null=True,blank=True)
-    Prime = models.FloatField(default=0,null=True,blank=True)
     Nombre_de_Jour_Travaille_Admin= models.PositiveIntegerField(default=0,null=True,blank=True)
     Poste = models.CharField(max_length=10,null=True,blank=True,choices=statut_Poste)
     Date_d_entrée = models.DateField(null=True,blank=True)
     Date_de_Sortie = models.DateField(null=True,blank=True)
-    Taux_Horaire= models.FloatField(default=0,null=True,blank=True)
-    Salaire_Avancee = models.FloatField(default=0,null=True,blank=True)
-    salaire_finale = models.IntegerField(default=0,null=True,blank=True)
     anciennetee = models.IntegerField(default=0,null=True, blank=True)
-    S_H = models.FloatField(default=0,null=True, blank=True)
     Motif_de_départ = models.CharField(default="-",max_length=1000,null=True,blank=True,choices=STATUT_causededepart)
     Commentaire = models.CharField(default="-",max_length=1000,null=True,blank=True)
-    user =models.OneToOneField(User, null=True,blank=True,on_delete=models.CASCADE)
+    Prime_Produit = models.FloatField(default=0,null=True,blank=True)
+    Taux_Horaire= models.FloatField(default=0,null=True,blank=True)
+    Avance_sur_salaire = models.FloatField(default=0,null=True,blank=True)
+    S_H = models.FloatField(default=0,null=True, blank=True)
+    user =models.OneToOneField(User, null=True,blank=True,on_delete=models.CASCADE) 
 
     def calculate_work_duration_in_months(self):
         today = date.today()
@@ -119,4 +118,17 @@ class Collaborateur(models.Model):
     def __str__(self): 
         return str(self.Nom)
     
-    
+class MonthYearField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 7  # Maximum length for 'Month Year' string
+        super().__init__(*args, **kwargs)
+
+class Salaire(models.Model):
+    id_Collaborateur=models.ForeignKey(Collaborateur,on_delete=models.CASCADE)
+    Date_de_salaire = MonthYearField(null=True, blank=True)
+    salaire_finale = models.IntegerField(default=0,null=True,blank=True)
+
+class Salaire_admin(models.Model):
+    id_Collaborateur=models.ForeignKey(Collaborateur,on_delete=models.CASCADE)
+    Date_de_salaire = MonthYearField(null=True, blank=True)
+    salaire_finale = models.IntegerField(default=0,null=True,blank=True)

@@ -4,7 +4,7 @@
         <div class="card mb-4">
           <div class="card-header pb-0">
             <h6>Heure de travail<br>
-                <form role="form text-center" method="POST" action="{% url 'salaire' %}">
+                <form role="form text-center" method="POST" action="{% url 'salaire_agent' %}">
                         {% csrf_token %}
                         <div class="mb-3 text-center">
                             <input type="text"  name="TH" id="TH" class="form-control" required>
@@ -13,7 +13,6 @@
                     </form>
             </h6>
           </div>
-          
         </div>
       </div>
     </div>

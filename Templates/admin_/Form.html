@@ -5,14 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form </title>
+<style>
+    @page {
+        size: a4 portrait;
+        @frame header_frame {           /* Static Frame */
+            -pdf-frame-content: header_content;
+            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+        }
+        @frame content_frame {          /* Content Frame */
+            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+        }
+        @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+        }
+    }
+</style>
 </head>
 <body >
     <div style="margin:10px 20px;display:flex; justify-content:space-between;">
         <div>
-            <img src="{% static 'Site de Societe/img/icon/icon_1.jpg' %}" alt="Logo" width="100" height="100">
-        </div>
+            <img src="" alt="Logo" width="100" height="100">
+            
+            </div>
         <div>
-            Mois : {{moins}} 2024
+            Mois : {{salaire.Date_de_salaire}} 2024
         </div>    
     </div>
 
@@ -66,7 +83,7 @@
         <tr>
             <td style="width:40%">Prime de productivité
             </td>
-            <td style="text-align : center">{{ collaborateur.Prime }}</td>
+            <td style="text-align : center">{{ collaborateur. Prime_Produit }}</td>
         </tr>
         <tr>
             <td style="width:40%">Avance sur salaire
@@ -76,7 +93,7 @@
         <tr>
             <td style="width:40%">Salaire à payer
             </td>
-            <td style="text-align : center">{{ collaborateur.salaire_finale }}</td>
+            <td style="text-align : center">{{ salaire.salaire_finale }}</td>
         </tr>
     </table>
 

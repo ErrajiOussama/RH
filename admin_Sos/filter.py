@@ -7,3 +7,9 @@ class Cola_filter(django_filters.FilterSet):
     class Meta:
         model= Collaborateur
         fields = ['Nom', 'Prenom']
+"""
+class salaire_filter(django_filters.FilterSet):
+    Date = django_filters.MonthYearField(lookup_expr='icontains')
+    class Meta:
+        model= Collaborateur
+        fields = ['Date']"""

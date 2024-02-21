@@ -6,7 +6,7 @@
         <div class="card mb-4">
           <div class="card-header pb-0">
             <h6>
-              PAIE {{ moin }} 2024 : {{ TH_f }} 
+              PAIE Agent {{ moin }} : {{ TH_f }} 
             </h6>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
@@ -24,36 +24,36 @@
                   </tr>
                 </thead>
                 <tbody>
-                {% for C in collaborateur %}
+                {% for S in salaire %}
                   <tr>
                     <td>
                       <div class="d-flex px-2 py-1">
                         <div class="d-flex flex-column justify-content-center">
-                          <h6 class="mb-0 text-sm">{{ C.Nom }}</h6>
+                          <h6 class="mb-0 text-sm">{{ S.id_Collaborateur.Nom }}</h6>
                         </div>
                       </div>
                     </td>
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_base }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Salaire_base }}</p>
                     </td>
 
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ C.S_H }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.S_H }}</p>
                     </td>
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ C.Taux_Horaire }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Taux_Horaire }}</p>
                     </td>
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_Avancee }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Avance_sur_salaire }}</p>
                     </td>
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ C.Prime }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Prime_Produit }}</p>
                     </td>                       
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ C.salaire_finale }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.salaire_finale }}</p>
                     </td>
                     <td class="align-middle">
-                      <form action="{% url 'EDS' id=C.id %}" method="get">
+                      <form action="{% url 'EDS' id=S.id_Collaborateur.id %}" method="get">
                       <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
                         EDS
                       </button> 
