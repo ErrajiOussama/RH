@@ -64,7 +64,6 @@ def Adimn_view(request):
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
     collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F').count()
-    
     c=1
     collaborateur1=Collaborateur.objects.get(id=1)
     salaire_som=collaborateur1.Salaire_base
@@ -118,8 +117,8 @@ def Form_EDS(request,id):
     instance= Collaborateur.objects.get(id=id)
     salaire=Salaire.objects.get(id_Collaborateur=id)
     if instance:
-        return render(request,'admin_/Form.html',{'collaborateur':instance,'salaire':salaire})
-    return render(request,'admin_/Salaries.html')
+        return render(request,'admin_/salaire_complet/Form.html',{'collaborateur':instance,'salaire':salaire})
+    return render(request,'admin_/salaire_complet/Salaries.html')
 
 @login_required(login_url='login')
 @admin_only
@@ -149,18 +148,7 @@ def DelCView(request,id):
 def logoutview(request):
     logout(request)
     return redirect('home')
-""""
-@login_required(login_url='login')
-def chrono_view(request):
-    if request.method == 'POST':
-        start_time = timezone.now()
-        stop_time = timezone.now()  # You may need to modify this logic depending on your requirements
-        elapsed_time = stop_time - start_time
-        chrono_data = Collaborateur.objects.create()
-        chrono_data.save()
-        return redirect('chrono')  # Redirect to the chrono page after saving the data
-    return render(request, 'Agent/chrono.html')
-"""
+
 
 def Salaries_calculer(request):
     context = Salaire.objects.all()
@@ -171,9 +159,9 @@ def Salaries_calculer(request):
         id=Collaborateur.objects.get(Nom=nom_query)
         context = Salaire.objects.filter(id_Collaborateur=id)
     else:
-        context = myFilter.qs
+        context = Salaire.objects.all()
 
-    return render(request, 'admin_/tables salaire.html', {'salaire': context})
+    return render(request, 'admin_/salaire_complet/tables salaire.html', {'salaire': context})
 
 @admin_only
 def modify_salary(request,id):
@@ -194,10 +182,8 @@ def modify_salary(request,id):
         salaire.Date_de_salaire=month_year_str
         salaire.save()
         print(collaborateurs)
-    
-
     print("not ok")
-    return redirect('rapport')
+    return redirect('rapport Agent')
 
 @admin_only
 def Salaries_agent(request):
@@ -212,6 +198,11 @@ def Salaries_agent(request):
         # Check if a salary entry already exists for the current month
 
         salaries = []  # List to store all Salaire instances
+        existing_salaries = Salaire.objects.filter(Date_de_salaire=month_year_str)
+
+        # If salary entries already exist for the current month, redirect to another page
+        if existing_salaries.exists():
+            return redirect('rapport Agent') 
         for collaborateur in collaborateurs:
             if collaborateur.Date_de_Sortie and collaborateur.Date_de_Sortie < second_month_date:
                 # Skip calculation if Date_de_Sortie is before the second month
@@ -238,8 +229,8 @@ def Salaries_agent(request):
             'TH_f': th_f,
             'moin': month_year_str
         }
-        return render(request, 'admin_/salary_result.html', context)
-    return render(request, 'admin_/Salaries.html')
+        return render(request, 'admin_/salaire_complet/salary_result.html', context)
+    return render(request, 'admin_/salaire_complet/Salaries.html')
 
 @admin_only
 def Salaries_admin(request):
@@ -248,9 +239,14 @@ def Salaries_admin(request):
     current_date = datetime.now()
     month_year_str = current_date.strftime('%B %Y')
     salaries = []  # List to store all Salaire instances
+    existing_salaries = Salaire_admin.objects.filter(Date_de_salaire=month_year_str)
+
+        # If salary entries already exist for the current month, redirect to another page
+    if existing_salaries.exists():
+        return redirect('rapport Admin') 
     for collaborateur in collaborateurs:
         Days_ofwork= collaborateur.Nombre_de_Jour_Travaille_Admin
-        salary = round((collaborateur.Salaire_base / 22) * Days_ofwork, 2)
+        salary = round((collaborateur.Salaire_base / 22) * Days_ofwork-collaborateur.Avance_sur_salaire, 2)
         print(salary)
         collaborateur.save()
             # Create a new instance of the Salaire model
@@ -266,7 +262,7 @@ def Salaries_admin(request):
         'salaire': salaries,
         'moin': month_year_str
         }
-    return render(request, 'admin_/Admin_salaire.html', context)
+    return render(request, 'admin_/salaire_complet/Admin_salaire.html', context)
 
 """
 def generate_pdf(request, id):
@@ -290,8 +286,8 @@ def generate_pdf(request, id):
 
 import jinja2
 import pdfkit
-
-def generate_pdf(request, id):
+@admin_only
+def generate_pdf(id):
     collaborateur = get_object_or_404(Collaborateur, id=id)
     salaire = Salaire.objects.get(id_Collaborateur=id)
     context = {'collaborateur': collaborateur,'salaire':salaire}
@@ -312,9 +308,9 @@ def generate_pdf(request, id):
     
     return response
 
-
-def Report_salaire(request):
-    context = Collaborateur.objects.all()
+@admin_only
+def Report_salaire_agent(request):
+    context = Collaborateur.objects.filter(Poste='Agent')
     context2 = Salaire.objects.all()
     
     if 'group' in request.GET and request.GET['group']:
@@ -322,4 +318,42 @@ def Report_salaire(request):
         print(group)
         context2 = Salaire.objects.filter(Date_de_salaire=group)
 
-    return render(request, 'admin_/rapport.html', {'collaborateur': context,'salaire': context2})
+    return render(request, 'admin_/salaire_complet/rapport Agent.html', {'collaborateur': context,'salaire': context2})
+@admin_only
+def Report_salaire_admin(request):
+    context = Collaborateur.objects.filter(Poste='Admin')
+    context2 = Salaire_admin.objects.all()
+    
+    
+    if 'group' in request.GET and request.GET['group']:
+        group=request.GET['group']
+        print(group)
+        context2 = Salaire_admin.objects.filter(Date_de_salaire=group)
+
+    return render(request, 'admin_/salaire_complet/rapport Admin.html', {'collaborateur': context,'salaire': context2})
+@admin_only
+def VirementView(request):
+    context = Collaborateur.objects.all()
+    context2 = Salaire.objects.all()
+    context3 = Salaire_admin.objects.all()
+
+    salaire = list(context2) + list(context3)
+
+    return render(request, 'admin_/salaire_complet/Virement.html', {'collaborateur': context, 'salaire': salaire})
+
+@admin_only
+def enter_hours(request):
+    if request.method == 'POST':
+        form = HoursWorkedForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            for collaborateur in Collaborateur.objects.filter(Poste='Agent'):
+                hours_worked = form.cleaned_data.get('hours_worked_{}'.format(collaborateur.id))
+                if hours_worked is not None:
+                    collaborateur.Taux_Horaire = hours_worked  # Update Taux_Horaire with hours worked
+                    collaborateur.save()  # Save collaborateur object with updated Taux_Horaire
+            # Redirect or display a success message
+            return redirect('table')  # Assuming 'table' is the name of the URL pattern to redirect to
+    else:
+        form = HoursWorkedForm()
+    return render(request, 'admin_/HW.html', {'form': form})

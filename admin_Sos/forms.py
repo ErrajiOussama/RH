@@ -27,3 +27,17 @@ class registerForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username','password1','password2','id']
+
+
+
+class HoursWorkedForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(HoursWorkedForm, self).__init__(*args, **kwargs)
+        for collaborateur in Collaborateur.objects.filter(Poste='Agent'):
+            label = 'Hours worked for {} {}'.format(collaborateur.Prenom, collaborateur.Nom)
+            self.fields['hours_worked_{}'.format(collaborateur.id)] = forms.DecimalField(label=label, required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # You can add custom validation logic here if needed
+        return cleaned_data

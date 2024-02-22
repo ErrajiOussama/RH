@@ -4,20 +4,14 @@
     <div class="row">
       <div class="col-12">
         <div class="card mb-4">
-          <div class="card-header pb-0">
-            <h6>
-              PAIE Admin {{ moin }}  
-            </h6>
-          </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0" style="height: 400px; overflow-y: auto;">
               <table class="table align-items-center mb-0">
                 <thead>
                   <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Admin</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire de Base</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nbre de jour Travaillees</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire finale</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Agent</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Montant a Payee</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">RIB</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -31,22 +25,11 @@
                       </div>
                     </td>
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Salaire_base }}</p>
-                    </td>
-
-                    <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Nombre_de_Jour_Travaille_Admin }}</p>
-                    </td> 
-                    <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ S.salaire_finale }}</p>
                     </td>
-                    <td class="align-middle">
-                      <form action="{% url 'EDS' id=S.id_Collaborateur.id  %}" method="get">
-                      <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
-                        EDS
-                      </button> 
-                    </form>
-                    </td> 
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.RIB }}</p>
+                    </td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -61,7 +44,7 @@
       
       </div>
     </div>
-   
+
     <script>
       document.getElementById("downloadCsvBtn").addEventListener("click", function() {
           // Extract table data

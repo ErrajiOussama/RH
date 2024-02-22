@@ -5,9 +5,30 @@
       <div class="col-12">
         <div class="card mb-4">
           <div class="card-header pb-0">
-            <h6>
-              PAIE Admin {{ moin }}  
-            </h6>
+            <div class="mb-3 text-center">
+              <form role="form text-center" action="{% url 'rapport Admin' %}" method="GET"> 
+                {% csrf_token %}
+                <div class="mb-3 text-center">
+                <label for="group">Month</label>
+                <select class="form-select" name="group" id="group">
+                  <option selected>Month ....</option>
+                  <option value="January 2024">January</option>
+                  <option value="February 2024">February</option>
+                  <option value="March 2024">March</option>
+                  <option value="April 2024">April</option>
+                  <option value="May 2024">May</option>
+                  <option value="June 2024">June</option>
+                  <option value="July 2024">July</option>
+                  <option value="August 2024">August</option>
+                  <option value="September 2024">September</option>
+                  <option value="October 2024">October</option>
+                  <option value="November 2024">November</option>
+                  <option value="December 2024">December</option>
+                </select>
+                <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn btn-primary">search</button>
+              </div>
+              </form>
+            </div>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0" style="height: 400px; overflow-y: auto;">
@@ -16,6 +37,7 @@
                   <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Admin</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire de Base</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Avance sur salaire</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nbre de jour Travaillees</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire finale</th>
                   </tr>
@@ -33,19 +55,21 @@
                     <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Salaire_base }}</p>
                     </td>
-
                     <td class="align-middle text-center">
-                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Nombre_de_Jour_Travaille_Admin }}</p>
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Avance_sur_salaire }}</p>
                     </td> 
                     <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Nombre_de_Jour_Travaille_Admin }}</p>
+                    </td>                    
+                    <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ S.salaire_finale }}</p>
-                    </td>
+                    </td> 
                     <td class="align-middle">
                       <form action="{% url 'EDS' id=S.id_Collaborateur.id  %}" method="get">
-                      <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
-                        EDS
-                      </button> 
-                    </form>
+                        <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
+                          EDS
+                        </button> 
+                      </form>
                     </td> 
                   </tr>
                   {% endfor %}

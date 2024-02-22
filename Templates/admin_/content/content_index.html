@@ -8,7 +8,7 @@
               <div class="row">
                 <div class="col-8">
                   <div class="numbers">
-                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Nombre des agents Actif</p>
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold"> SALARIES ACTUELS</p>
                     <h5 class="font-weight-bolder mb-0">
                       
                       <span class="text-success text-sm font-weight-bolder">{{ collaborateur_Actif }}</span>
@@ -30,7 +30,7 @@
               <div class="row">
                 <div class="col-8">
                   <div class="numbers">
-                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Nombre des agents InActif</p>
+                    <p class="text-sm mb-0 text-capitalize font-weight-bold">INACTIF</p>
                     <h5 class="font-weight-bolder mb-0">
                       
                       <span class="text-success text-sm font-weight-bolder">{{ collaborateur_Inactif }}</span>
@@ -141,7 +141,7 @@
         const agentGenderChart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ['Home', 'Femme'],
+                labels: ['Homme', 'Femme'],
                 datasets: [{
                     label: 'Agent Gender',
                     data: [collaborateurMan, collaborateurWomen],

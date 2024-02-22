@@ -9,7 +9,10 @@ class Collaborateur(models.Model):
         ('FORMATION','FORMATION'),
         ('STAGE','STAGE'),
     )
-
+    STATUT_activite = (
+        ('FRANCE','FRANCE'),
+        ('CANADA','CANADA'),
+    )
     STATUT_causededepart = (
         ('Demission','Demission'),
         ('Licenciement','Licenciement'),
@@ -74,6 +77,7 @@ class Collaborateur(models.Model):
     Taux_Horaire= models.FloatField(default=0,null=True,blank=True)
     Avance_sur_salaire = models.FloatField(default=0,null=True,blank=True)
     S_H = models.FloatField(default=0,null=True, blank=True)
+    Activite=models.CharField(max_length=10,null=True,blank=True,choices=STATUT_activite)
     user =models.OneToOneField(User, null=True,blank=True,on_delete=models.CASCADE) 
 
     def calculate_work_duration_in_months(self):
