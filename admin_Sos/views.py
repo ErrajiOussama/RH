@@ -12,6 +12,8 @@ from django.utils.translation import activate
 from django.template.loader import get_template
 from .filter import * 
 from django.shortcuts import get_object_or_404
+import jinja2
+import pdfkit
 
 @login_required(login_url='login')
 def IndexView(request):
@@ -284,8 +286,7 @@ def generate_pdf(request, id):
     return response
 """
 
-import jinja2
-import pdfkit
+
 @admin_only
 def generate_pdf(id):
     collaborateur = get_object_or_404(Collaborateur, id=id)
