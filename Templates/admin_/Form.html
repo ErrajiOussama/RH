@@ -24,12 +24,12 @@
 </head>
 <body >
     <div style="margin:10px 20px;display:flex; justify-content:space-between;">
-        <div>
+        <!--<div>
             <img src="" alt="Logo" width="100" height="100">
-            
-            </div>
+        </div>
+    -->
         <div>
-            Mois : {{salaire.Date_de_salaire}} 2024
+            Mois : {{salaire.Date_de_salaire}}
         </div>    
     </div>
 
@@ -38,20 +38,20 @@
 
     <table border="1" style="width:100%; border-collapse: collapse;">
         <th colspan="2">Entretien EDS</th>
-        <tr>
-            <td style="width:40%">Nom et prenom</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nom et prenom</td>
             <td style="text-align : center">{{collaborateur.Nom}} {{collaborateur.Prenom}}</td>
         </tr>
-        <tr>
-            <td style="width:40%">Date d'entretien</td>
+        <tr colspan="2"style="">
+            <td style="width:40%;height:60px;">Date d'entretien</td>
             <td style="text-align : center"></td>
         </tr>
-        <tr>
-            <td style="width:40%">Activite</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Activite</td>
             <td style="text-align : center">Production</td>
         </tr>
-        <tr>
-            <td style="width:40%">Manager</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Manager</td>
             <td style="text-align : center"></td>
         </tr>
     </table>
@@ -59,39 +59,39 @@
     <div style="margin:30px"></div>
 
     <table border="1" style="width:100%; border-collapse: collapse;">
-        <tr>
-            <td style="width:40%">Salaire de base</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Salaire de base</td>
             <td style="text-align : center">{{collaborateur.Salaire_base}}</td>
         </tr>
-        <tr>
-            <td style="width:40%">Nbre de retards/absences</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nbre de retards/absences</td>
             <td style="text-align : center"></td>
         </tr>
-        <tr>
-            <td style="width:40%">Nombre d'heures planifiées</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nombre d'heures planifiées</td>
             <td style="text-align : center"></td>
         </tr>
-        <tr>
-            <td style="width:40%">Nombre d'heures travaillées</td>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nombre d'heures travaillées</td>
             <td style="text-align : center">{{ collaborateur.Taux_Horaire }}</td>
         </tr>
-        <tr>
-            <td style="width:40%">Base journalière
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Base journalière
             </td>
             <td style="text-align : center">{{ collaborateur.S_H }}</td>
         </tr>
-        <tr>
-            <td style="width:40%">Prime de productivité
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Prime de productivité
             </td>
-            <td style="text-align : center">{{ collaborateur. Prime_Produit }}</td>
+            <td style="text-align : center">{{ collaborateur.Prime_Produit }}</td>
         </tr>
-        <tr>
-            <td style="width:40%">Avance sur salaire
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Avance sur salaire
             </td>
-            <td style="text-align : center">{{ collaborateur.Salaire_Avancee }}</td>
+            <td style="text-align : center">{{ collaborateur.Avance_sur_salaire }}</td>
         </tr>
-        <tr>
-            <td style="width:40%">Salaire à payer
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Salaire à payer
             </td>
             <td style="text-align : center">{{ salaire.salaire_finale }}</td>
         </tr>
@@ -99,7 +99,7 @@
 
     <div style="margin:30px"></div>
 
-    <table border="1" style=" width:100%; border-collapse: collapse;">
+    <table border="1" style=" width:100%;height:60px; border-collapse: collapse;">
         <tr>
             <th>
                 Signature Manager
@@ -125,14 +125,21 @@
             </td>
         </tr>
     </table>
+    
     <form action="{% url 'generate_pdf' id=collaborateur.id  %}" method="get">
         {% csrf_token %}  
-        <button type="submit" value="submit">
-            Telecharger PDF
+        <button style="font-size: 20px; /* Adjust the font size as needed */
+        padding: 10px 20px; /* Adjust the padding as needed */
+        background-color: transparent;
+        border: none;
+        cursor: pointer;" type="submit" value="submit">
+              
         </button> 
       </form>
     <div style="margin:30px"></div>
     </div>
+    <div>
+    
 
 </body>
 </html>

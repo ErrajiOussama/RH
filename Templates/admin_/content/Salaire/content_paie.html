@@ -1,0 +1,77 @@
+<div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header pb-0">
+            <h6>Collaborateur<br>
+            <a href="{% url 'AddC' %}" class="fa fa-plus text-secondary mb-3"></a>
+            </h6>
+            <div class="header_search_form_container">
+              <form role="form text-center" action="{% url 'salaire modif' %}" method="GET"> 
+                <!--{{ myFilter.form }}-->
+                <div class="mb-3 text-center">
+                  <input type="search" name="Nom" class="form-control">
+                  <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn btn-primary">search</button>
+                </div>
+              </form>
+          </div>
+          </div>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0" style="height: 400px; overflow-y: auto;">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Agent</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire de Base</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">salaire/heure</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nbre d'heures Travaillees</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Avance sur salaire</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prime Produit</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire finale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for S in salaire %}
+                  <tr>
+                    <td>
+                      <div class="d-flex px-2 py-1">
+                        <div class="d-flex flex-column justify-content-center">
+                          <h6 class="mb-0 text-sm">{{ S.id_Collaborateur.Nom }}</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Salaire_base }}</p>
+                    </td>
+
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.S_H }}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Taux_Horaire }}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Avance_sur_salaire }}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.id_Collaborateur.Prime_Produit }}</p>
+                    </td>                       
+                    <td class="align-middle text-center">
+                      <p class="text-xs font-weight-bold mb-0">{{ S.salaire_finale }}</p>
+                    </td> 
+                    <td class="align-middle">
+                        <form action="{% url 'salaire result' id=S.id_Collaborateur.id  %}" method="get">
+                        <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
+                          Recalculer
+                        </button> 
+                      </form>
+                      </td> 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

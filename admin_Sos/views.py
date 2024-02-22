@@ -13,7 +13,6 @@ from django.template.loader import get_template
 from .filter import * 
 from django.shortcuts import get_object_or_404
 
-
 @login_required(login_url='login')
 def IndexView(request):
     return render(request,'Agent/index.html')
@@ -65,10 +64,14 @@ def Adimn_view(request):
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
     collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F').count()
-
-    salaire_som=0
+    
+    c=1
+    collaborateur1=Collaborateur.objects.get(id=1)
+    salaire_som=collaborateur1.Salaire_base
     for collaborateur in Collaborateur.objects.all():
-        salaire_som=collaborateur.Salaire_base
+        if c > 1 :
+            salaire_som=collaborateur.Salaire_base+ salaire_som
+        c=c+1 
     collaborateur_Turnover= round((Collaborateur.objects.filter(Statut='INACTIF').count()/Collaborateur.objects.all().count())*100, 2)
     print(collaborateur_man)
     print(collaborateur_Women)
@@ -79,7 +82,7 @@ def Adimn_view(request):
         'collaborateur_man':collaborateur_man,
         'collaborateur_women':collaborateur_Women,
         'collaborateur_Turnover':collaborateur_Turnover,
-        'salaire max':salaire_som,
+        'salaire_max':salaire_som,
     }
     return render(request,'admin_/home_admin.html',context)
 
@@ -159,58 +162,60 @@ def chrono_view(request):
     return render(request, 'Agent/chrono.html')
 """
 
+def Salaries_calculer(request):
+    context = Salaire.objects.all()
 
-"""
-def Salaries(request):
-    if request.method == 'POST':
-        th_f = float(request.POST['TH'])
-        collaborateurs = Collaborateur.objects.filter(Poste='Agent')  # Assuming 'post' is a field in your Collaborateur model
+    myFilter = Cola_filter(request.GET, queryset=context)
+    if 'Nom' in request.GET and request.GET['Nom']:
+        nom_query = request.GET['Nom']
+        id=Collaborateur.objects.get(Nom=nom_query)
+        context = Salaire.objects.filter(id_Collaborateur=id)
+    else:
+        context = myFilter.qs
+
+    return render(request, 'admin_/tables salaire.html', {'salaire': context})
+
+@admin_only
+def modify_salary(request,id):
+    if request.method == 'GET':
+        print("ok")
+        collaborateurs = Collaborateur.objects.get(id=id)
+        salaire=Salaire.objects.get(id_Collaborateur=id)
         activate('fr')
-        # Get the current date
         current_date = datetime.now()
-        # Get the name of the current month in French
-        month_name = current_date.strftime('%B')
-        for collaborateur in collaborateurs:
-            print(collaborateur.Nom)
-            
-            th = round(collaborateur.Salaire_base / th_f, 2)
-            hours_of_work = collaborateur.Taux_Horaire  # Assuming 'Horaire' is the hours of work for each collaborateur
-            prime = collaborateur.Prime  # Assuming 'Prime' is the prime for each collaborateur
-            PrimeAvance = collaborateur.Salaire_Avancee
-            print(th)
-            # Calculate the salary for this collaborateur
-            salary = round(hours_of_work * th + prime - PrimeAvance, 2)
-            collaborateur.S_H = th
-            # Update the collaborateur object with the calculated salary
-            collaborateur.salaire_finale = salary  # Assuming you have a field 'salaire' in your Collaborateur model
-            collaborateur.save()
-            print(collaborateur.salaire_finale)
-        context = {
-            'collaborateur': collaborateurs,
-            'TH_f': th_f,
-            'moin': month_name
-        }
-        return render(request, 'admin_/salary_result.html', context)
-    return render(request, 'admin_/Salaries.html')
-"""
+        month_year_str = current_date.strftime('%B %Y')
+        # Check if a salary entry already exists for the current month
+
+        hours_of_work = collaborateurs.Taux_Horaire
+        prime = collaborateurs.Prime_Produit
+        PrimeAvance = collaborateurs.Avance_sur_salaire
+        salary = round(hours_of_work * collaborateurs.S_H + prime - PrimeAvance, 2)
+        salaire.salaire_finale=salary
+        salaire.Date_de_salaire=month_year_str
+        salaire.save()
+        print(collaborateurs)
+    
+
+    print("not ok")
+    return redirect('rapport')
+
 @admin_only
 def Salaries_agent(request):
     if request.method == 'POST':
         th_f = float(request.POST['TH'])
         collaborateurs = Collaborateur.objects.filter(Poste='Agent')
         activate('fr')
-        current_date = datetime.now()
+        current_date = datetime.now().date()
         month_year_str = current_date.strftime('%B %Y')
-        existing_salaries = Salaire.objects.filter(Date_de_salaire=month_year_str)
-
-        # If salary entries already exist for the current month, redirect to another page
-        if existing_salaries.exists():
-            return redirect('home_admin')  # Replace 'other_page_name' with the name of your other page URL pattern
-
+        second_month_date = datetime(current_date.year, 2, 1).date()
+        
         # Check if a salary entry already exists for the current month
 
         salaries = []  # List to store all Salaire instances
         for collaborateur in collaborateurs:
+            if collaborateur.Date_de_Sortie and collaborateur.Date_de_Sortie < second_month_date:
+                # Skip calculation if Date_de_Sortie is before the second month
+                continue
             th = round(collaborateur.Salaire_base / th_f, 2)
             hours_of_work = collaborateur.Taux_Horaire
             prime = collaborateur.Prime_Produit
@@ -288,7 +293,8 @@ import pdfkit
 
 def generate_pdf(request, id):
     collaborateur = get_object_or_404(Collaborateur, id=id)
-    context = {'collaborateur': collaborateur}
+    salaire = Salaire.objects.get(id_Collaborateur=id)
+    context = {'collaborateur': collaborateur,'salaire':salaire}
 
     # Render Jinja2 template
     template = get_template('admin_/Form.html')
