@@ -47,12 +47,6 @@
                     Profile
                   </a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link me-2" href="{% url 'login' %}">
-                    <i class="fas fa-key opacity-6 text-dark me-1"></i>
-                    Sign In
-                  </a>
-                </li>
               </ul>
               
             </div>
@@ -88,14 +82,14 @@
                   <label for="username" class="form-label">Username:</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="fa fa-user opacity-6 text-dark me-1"></i></span>
-                    {{ formRegister.username }}
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
                   </div>
                 </div>
                 <div class="mb-4">
                   <label for="password1" class="form-label">Password:</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-key opacity-6 text-dark me-1"></i></span>
-                    {{ formRegister.password1 }}
+                    <input type="password" class="form-control" id="password1" name="password" placeholder="Enter your password">
                   </div>
                 </div>
                       <div class="text-center">

@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from datetime import date
 
 class Collaborateur(models.Model):
+    
+    Statut_P= (
+        ('AGENT','AGENT'),
+        ('CADRE','CADRE'),
+        ('TECHNICIEN','TECHNICIEN'),
+        ('STAGIAIRE','STAGIAIRE'),
+    )
     STATUT_statut = (
         ('ACTIF','ACTIF'),
         ('INACTIF','INACTIF'),
@@ -21,6 +28,7 @@ class Collaborateur(models.Model):
         ('Comportement','Comportement'),
         ('Etudes','Etudes'),
         ('Sans motif(Volantaire)','Sans motif(Volantaire)'),
+        ('Autre','Autre'),
     )
     Contart = (
         ('Etranger','Etranger'),
@@ -28,17 +36,18 @@ class Collaborateur(models.Model):
         ('CDD','CDD'),
         ('CDI','CDI'),
     )
+    TTGD = (
+        ('Célibataire ','Célibataire'),
+        ('Marié(e)','Marié(e)'),
+        ('Divorcé(e)','Divorcé(e)'),
+        ('Veuf(ve)','Veuf(ve)'),
+    )
 
     statut_sexe = (
         ('H','H'),
         ('F','F'),
     )
 
-    statut_Poste = (
-        ('Agent','Agent'),
-        ('Admin','Admin'),
-        ('RH','RH'),
-    )
     statut_TF = (
         ('OUI','OUI'),
         ('NON','NON'),
@@ -47,27 +56,28 @@ class Collaborateur(models.Model):
 
 
     Statut = models.CharField(max_length=10,null=True,blank=True,choices=STATUT_statut)
-    Nom = models.CharField(max_length=50,null=True,blank=True)
-    Prenom = models.CharField(max_length=50,null=True,blank=True)
-    Sexe = models.CharField(max_length=5,null=True,blank=True,choices=statut_sexe)
+    Nom = models.CharField(max_length=500,null=True,blank=True)
+    Prenom = models.CharField(max_length=500,null=True,blank=True)
+    Sexe = models.CharField(max_length=50,null=True,blank=True,choices=statut_sexe)
     Date_de_naissance = models.DateField(null=True,blank=True)
     Age = models.PositiveIntegerField(null=True,blank=True)
-    Situation_familiale = models.CharField(max_length=10, null=True,blank=True)
+    Situation_familiale = models.CharField(max_length=100, null=True,blank=True,choices=TTGD)
     Nombre_d_enfants = models.FloatField(default=0, null=True,blank=True)
-    N_CIN =models.CharField(default="-",max_length=12 ,null=True,blank=True)
-    N_Passeport=models.CharField(default="-",max_length=30 ,null=True,blank=True)
-    Nationalité=models.CharField(default="-",max_length=20,null=True,blank=True)
+    N_CIN =models.CharField(default="-",max_length=120 ,null=True,blank=True)
+    N_Passeport=models.CharField(default="-",max_length=300 ,null=True,blank=True)
+    Nationalité=models.CharField(default="-",max_length=200,null=True,blank=True)
     Adresse_postale=models.CharField(default="-",max_length=200,null=True,blank=True)
-    Ville=models.CharField(default="-",max_length=20,null=True,blank=True)
+    Ville=models.CharField(default="-",max_length=100,null=True,blank=True)
     E_mail= models.EmailField(null=True,blank=True)
-    Declaration_CNSS= models.CharField(max_length=10,null=True,blank=True,choices=statut_TF)
-    N_de_téléphone=models.CharField(max_length=20,null=True,blank=True)
-    RIB = models.CharField(default="-",max_length=30,null=True,blank=True)
-    N_CNSS= models.CharField(default="-",max_length=20,null=True,blank=True)
-    Type_de_contrat= models.CharField(max_length=10,null=True,blank=True,choices=Contart)
+    Declaration_CNSS= models.CharField(max_length=100,null=True,blank=True,choices=statut_TF)
+    N_de_téléphone=models.CharField(max_length=200,null=True,blank=True)
+    RIB = models.CharField(default="-",max_length=300,null=True,blank=True)
+    N_CNSS= models.CharField(default="-",max_length=200,null=True,blank=True)
+    Type_de_contrat= models.CharField(max_length=100,null=True,blank=True,choices=Contart)
     Salaire_base = models.PositiveBigIntegerField(null=True,blank=True)
     Nombre_de_Jour_Travaille_Admin= models.PositiveIntegerField(default=0,null=True,blank=True)
-    Poste = models.CharField(max_length=10,null=True,blank=True,choices=statut_Poste)
+    Poste = models.CharField(max_length=100,null=True,blank=True)
+    CSP = models.CharField(max_length=100,null=True,blank=True,choices=Statut_P)
     Date_d_entrée = models.DateField(null=True,blank=True)
     Date_de_Sortie = models.DateField(null=True,blank=True)
     anciennetee = models.IntegerField(default=0,null=True, blank=True)
@@ -75,9 +85,10 @@ class Collaborateur(models.Model):
     Commentaire = models.CharField(default="-",max_length=1000,null=True,blank=True)
     Prime_Produit = models.FloatField(default=0,null=True,blank=True)
     Taux_Horaire= models.FloatField(default=0,null=True,blank=True)
+    Planifier= models.FloatField(default=0,null=True,blank=True)
     Avance_sur_salaire = models.FloatField(default=0,null=True,blank=True)
     S_H = models.FloatField(default=0,null=True, blank=True)
-    Activite=models.CharField(max_length=10,null=True,blank=True,choices=STATUT_activite)
+    Activite=models.CharField(max_length=100,null=True,blank=True,choices=STATUT_activite)
     user =models.OneToOneField(User, null=True,blank=True,on_delete=models.CASCADE) 
 
     def calculate_work_duration_in_months(self):

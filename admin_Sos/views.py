@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import *
 from admin_Sos.models import *
 from admin_Sos.forms import *
@@ -20,19 +21,22 @@ def IndexView(request):
     return render(request,'Agent/index.html')
 
 
-def loginPageView(request):    
+def loginPageView(request):
     if request.method == 'POST':
-        username1 = request.POST['username']
-        password1 = request.POST['password1']
-        user = authenticate(request, username=username1, password=password1)
-        if user is not None:
-            login(request, user)
-            messages.info(request, 'Vous ete connecter')
-            return redirect('home')
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, 'Vous êtes connecté')
+                return redirect('home')
+        # Authentication failed, display custom error message
+        messages.error(request, 'Nom d\'utilisateur ou mot de passe incorrect')
     else:
-        formRegister = registerForm()
-    context = {'formRegister' : formRegister}
-    return render(request, 'Agent/login.html', context )
+        form = AuthenticationForm()
+    return render(request, 'Agent/login.html', {'form': form})
 
 @admin_only
 def registerPageView(request):    
@@ -74,8 +78,6 @@ def Adimn_view(request):
             salaire_som=collaborateur.Salaire_base+ salaire_som
         c=c+1 
     collaborateur_Turnover= round((Collaborateur.objects.filter(Statut='INACTIF').count()/Collaborateur.objects.all().count())*100, 2)
-    print(collaborateur_man)
-    print(collaborateur_Women)
     
     context={
         'collaborateur_Actif':collaborateur_actif,
@@ -106,7 +108,7 @@ def TableView(request):
 def AddCView(request):
     if request.method == "POST":
         form = Collaborateurform(data=request.POST,files=request.FILES)
-        if form.is_valid:
+        if form.is_valid():
             form.save()
             return redirect('table')
     if request.method == "GET":
@@ -145,7 +147,7 @@ def DelCView(request,id):
     context={
             'Collaborateur':dele,
         }
-    return render(request,'admin_/content/delet.html',context)
+    return render(request,'admin_/delet.html',context)
 
 def logoutview(request):
     logout(request)
@@ -168,7 +170,7 @@ def Salaries_calculer(request):
 @admin_only
 def modify_salary(request,id):
     if request.method == 'GET':
-        print("ok")
+        
         collaborateurs = Collaborateur.objects.get(id=id)
         salaire=Salaire.objects.get(id_Collaborateur=id)
         activate('fr')
@@ -183,15 +185,15 @@ def modify_salary(request,id):
         salaire.salaire_finale=salary
         salaire.Date_de_salaire=month_year_str
         salaire.save()
-        print(collaborateurs)
-    print("not ok")
+        
+    
     return redirect('rapport Agent')
 
 @admin_only
 def Salaries_agent(request):
     if request.method == 'POST':
         th_f = float(request.POST['TH'])
-        collaborateurs = Collaborateur.objects.filter(Poste='Agent')
+        collaborateurs = Collaborateur.objects.filter(CSP='AGENT')
         activate('fr')
         current_date = datetime.now().date()
         month_year_str = current_date.strftime('%B %Y')
@@ -213,6 +215,7 @@ def Salaries_agent(request):
             hours_of_work = collaborateur.Taux_Horaire
             prime = collaborateur.Prime_Produit
             PrimeAvance = collaborateur.Avance_sur_salaire
+            collaborateur.Planifier=th_f
             salary = round(hours_of_work * th + prime - PrimeAvance, 2)
             collaborateur.S_H = th
             collaborateur.save()
@@ -236,7 +239,7 @@ def Salaries_agent(request):
 
 @admin_only
 def Salaries_admin(request):
-    collaborateurs = Collaborateur.objects.filter(Poste='Admin')
+    collaborateurs = Collaborateur.objects.filter(Poste='CADRE')
     activate('fr')
     current_date = datetime.now()
     month_year_str = current_date.strftime('%B %Y')
@@ -249,7 +252,7 @@ def Salaries_admin(request):
     for collaborateur in collaborateurs:
         Days_ofwork= collaborateur.Nombre_de_Jour_Travaille_Admin
         salary = round((collaborateur.Salaire_base / 22) * Days_ofwork-collaborateur.Avance_sur_salaire, 2)
-        print(salary)
+        
         collaborateur.save()
             # Create a new instance of the Salaire model
         salaire = Salaire_admin.objects.create(
@@ -288,13 +291,14 @@ def generate_pdf(request, id):
 
 
 @admin_only
-def generate_pdf(id):
+def generate_pdf(request,id):
+    
     collaborateur = get_object_or_404(Collaborateur, id=id)
     salaire = Salaire.objects.get(id_Collaborateur=id)
     context = {'collaborateur': collaborateur,'salaire':salaire}
 
     # Render Jinja2 template
-    template = get_template('admin_/Form.html')
+    template = get_template('admin_/salaire_complet/Form.html')
     html = template.render(context)
     
     # Configure pdfkit
@@ -316,7 +320,7 @@ def Report_salaire_agent(request):
     
     if 'group' in request.GET and request.GET['group']:
         group=request.GET['group']
-        print(group)
+        
         context2 = Salaire.objects.filter(Date_de_salaire=group)
 
     return render(request, 'admin_/salaire_complet/rapport Agent.html', {'collaborateur': context,'salaire': context2})
@@ -328,7 +332,6 @@ def Report_salaire_admin(request):
     
     if 'group' in request.GET and request.GET['group']:
         group=request.GET['group']
-        print(group)
         context2 = Salaire_admin.objects.filter(Date_de_salaire=group)
 
     return render(request, 'admin_/salaire_complet/rapport Admin.html', {'collaborateur': context,'salaire': context2})

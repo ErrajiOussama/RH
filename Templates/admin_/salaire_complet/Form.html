@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form </title>
 <style>
+    .top-right {
+        position: fixed;
+        top: 20px; /* Adjust as needed */
+        right: 20px; /* Adjust as needed */
+        background-color: #fff; /* Optional: Add a background color */
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 999; /* Ensure it's above other content */
+      }
     @page {
         size: a4 portrait;
         @frame header_frame {           /* Static Frame */
@@ -23,15 +33,11 @@
 </style>
 </head>
 <body >
-    <div style="margin:10px 20px;display:flex; justify-content:space-between;">
-        <!--<div>
-            <img src="" alt="Logo" width="100" height="100">
+        <div style="margin:100px 90px 100px 600px;display:flex; justify-content:space-between;">
+            <div>
+                Mois : {{salaire.Date_de_salaire}}
+            </div>    
         </div>
-    -->
-        <div>
-            Mois : {{salaire.Date_de_salaire}}
-        </div>    
-    </div>
 
     <div style="margin: auto; width:600px">
         <div style="margin:30px"></div>
@@ -48,7 +54,7 @@
         </tr>
         <tr colspan="2">
             <td style="width:40%;height:60px;">Activite</td>
-            <td style="text-align : center">Production</td>
+            <td style="text-align : center">{{ collaborateur.Activite }}</td>
         </tr>
         <tr colspan="2">
             <td style="width:40%;height:60px;">Manager</td>
@@ -69,7 +75,7 @@
         </tr>
         <tr colspan="2">
             <td style="width:40%;height:60px;">Nombre d'heures planifiées</td>
-            <td style="text-align : center"></td>
+            <td style="text-align : center">{{ collaborateur.Planifier }}</td>
         </tr>
         <tr colspan="2">
             <td style="width:40%;height:60px;">Nombre d'heures travaillées</td>
@@ -129,7 +135,7 @@
     <form action="{% url 'generate_pdf' id=collaborateur.id  %}" method="get">
         {% csrf_token %}  
         <button style="font-size: 20px; /* Adjust the font size as needed */
-        padding: 10px 20px; /* Adjust the padding as needed */
+        padding: 20px 50px; /* Adjust the padding as needed */
         background-color: transparent;
         border: none;
         cursor: pointer;" type="submit" value="submit">

@@ -40,6 +40,7 @@
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">N_CNSS</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Type_de_contrat</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Poste</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">CSP</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date d'entrée</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date de sortie</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ancienneté</th>
@@ -71,8 +72,12 @@
                         <p class="text-xs font-weight-bold mb-0">{{ C.Sexe}}</p>
                       </td>
                       <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_naissance}}</p>
-                      </td>                       
+                        {% if C.Date_de_naissance %}
+                            <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_naissance|date:"d/m/Y" }}</p>
+                        {% else %}
+                            <p class="text-xs font-weight-bold mb-0">-</p>
+                        {% endif %}
+                      </td>                     
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.Age }}</p>
                       </td>
@@ -113,11 +118,22 @@
                         <p class="text-xs font-weight-bold mb-0">{{ C.Poste }}</p>
                       </td>
                       <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Date_d_entrée }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ C.CSP }}</p>
                       </td>
-                      <td class="align-middle text-center text-sm">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_Sortie }}</p>
-                      </td>
+                      <td class="align-middle text-center">
+                        {% if C.Date_d_entrée %}
+                            <p class="text-xs font-weight-bold mb-0">{{ C.Date_d_entrée|date:"d/m/Y" }}</p>
+                        {% else %}
+                            <p class="text-xs font-weight-bold mb-0">-</p>
+                        {% endif %}
+                      </td> 
+                      <td class="align-middle text-center">
+                        {% if C.Date_de_Sortie %}
+                            <p class="text-xs font-weight-bold mb-0">{{ C.Date_de_Sortie|date:"d/m/Y" }}</p>
+                        {% else %}
+                            <p class="text-xs font-weight-bold mb-0">-</p>
+                        {% endif %}
+                      </td> 
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.anciennetee }}</p>
                       </td>  

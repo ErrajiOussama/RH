@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-wge$+(hgmz+x#=dy@9o9wvt4+9n(2)gghp(o44*m&v@pbyl80e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.186']
 
 
 # Application definition
@@ -119,3 +119,4 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  # Use 'bootstrap4' or 'bootstrap5' depending on your preference
 
+DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
