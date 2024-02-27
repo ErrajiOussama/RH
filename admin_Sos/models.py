@@ -74,7 +74,7 @@ class Collaborateur(models.Model):
     RIB = models.CharField(default="-",max_length=300,null=True,blank=True)
     N_CNSS= models.CharField(default="-",max_length=200,null=True,blank=True)
     Type_de_contrat= models.CharField(max_length=100,null=True,blank=True,choices=Contart)
-    Salaire_base = models.PositiveBigIntegerField(null=True,blank=True)
+    Salaire_base = models.PositiveBigIntegerField(default=0,null=True,blank=True)
     Nombre_de_Jour_Travaille_Admin= models.PositiveIntegerField(default=0,null=True,blank=True)
     Poste = models.CharField(max_length=100,null=True,blank=True)
     CSP = models.CharField(max_length=100,null=True,blank=True,choices=Statut_P)

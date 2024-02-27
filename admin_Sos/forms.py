@@ -9,9 +9,7 @@ class Collaborateurform(forms.ModelForm):
     class Meta:
         model=Collaborateur
         fields = ['Statut','Nom', 'Prenom','Sexe', 'Date_de_naissance','Situation_familiale','Nombre_d_enfants','N_CIN','N_Passeport','Nationalité','Adresse_postale','Ville','E_mail','Declaration_CNSS','N_de_téléphone','RIB','N_CNSS','Type_de_contrat','Salaire_base','Poste','CSP','Date_d_entrée','Date_de_Sortie','Prime_Produit','Taux_Horaire','Avance_sur_salaire','Activite','Motif_de_départ','Commentaire']
-    def __init__(self, *args, **kwargs):
-        super(Collaborateurform, self).__init__(*args, **kwargs)
-        self.fields['Date_d_entrée'].widget = forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'DD/MM/YYYY'}, format='%d/%m/%Y')   
+       
         
 collaborateur = apps.get_model('admin_Sos','Collaborateur')
 
@@ -35,9 +33,21 @@ class registerForm(UserCreationForm):
 class HoursWorkedForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(HoursWorkedForm, self).__init__(*args, **kwargs)
-        for collaborateur in Collaborateur.objects.filter(Poste='Agent'):
+        for collaborateur in Collaborateur.objects.filter(CSP='AGENT'):
             label = 'Hours worked for {} {}'.format(collaborateur.Prenom, collaborateur.Nom)
             self.fields['hours_worked_{}'.format(collaborateur.id)] = forms.DecimalField(label=label, required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # You can add custom validation logic here if needed
+        return cleaned_data
+
+class PrimeForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(PrimeForm, self).__init__(*args, **kwargs)
+        for collaborateur in Collaborateur.objects.filter(CSP='AGENT'):
+            label = 'Prime for {} {}'.format(collaborateur.Prenom, collaborateur.Nom)
+            self.fields['prime_{}'.format(collaborateur.id)] = forms.DecimalField(label=label, required=False)
 
     def clean(self):
         cleaned_data = super().clean()

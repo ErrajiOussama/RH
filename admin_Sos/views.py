@@ -9,6 +9,7 @@ from admin_Sos.models import *
 from admin_Sos.forms import *
 from .decorators import *
 from datetime import datetime
+from django.db.models import Q
 from django.utils.translation import activate
 from django.template.loader import get_template
 from .filter import * 
@@ -70,6 +71,8 @@ def Adimn_view(request):
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
     collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F').count()
+    collaborateur_france=Collaborateur.objects.filter(Activite='FRANCE',Statut='ACTIF').count()
+    collaborateur_canada=Collaborateur.objects.filter(Activite='CANADA',Statut='ACTIF').count()
     c=1
     collaborateur1=Collaborateur.objects.get(id=1)
     salaire_som=collaborateur1.Salaire_base
@@ -84,6 +87,8 @@ def Adimn_view(request):
         'collaborateur_Inactif':collaborateur_inactif,
         'collaborateur_man':collaborateur_man,
         'collaborateur_women':collaborateur_Women,
+        'collaborateur_france':collaborateur_france,
+        'collaborateur_canada':collaborateur_canada,
         'collaborateur_Turnover':collaborateur_Turnover,
         'salaire_max':salaire_som,
     }
@@ -130,7 +135,7 @@ def EditCView(request,id):
     instance= Collaborateur.objects.get(id=id)
     if request.method == "POST":
         form = Collaborateurform(data=request.POST,files=request.FILES,instance=instance)
-        if form.is_valid:
+        if form.is_valid():
             form.save()
             return redirect('table')
     if request.method == "GET":
@@ -210,21 +215,21 @@ def Salaries_agent(request):
         for collaborateur in collaborateurs:
             if collaborateur.Date_de_Sortie and collaborateur.Date_de_Sortie < second_month_date:
                 # Skip calculation if Date_de_Sortie is before the second month
-                continue
-            th = round(collaborateur.Salaire_base / th_f, 2)
+                continue    
+            th = collaborateur.Salaire_base / th_f
             hours_of_work = collaborateur.Taux_Horaire
             prime = collaborateur.Prime_Produit
             PrimeAvance = collaborateur.Avance_sur_salaire
             collaborateur.Planifier=th_f
-            salary = round(hours_of_work * th + prime - PrimeAvance, 2)
-            collaborateur.S_H = th
+            salary = round((hours_of_work * th) + prime - PrimeAvance,2)
+            collaborateur.S_H = round(th,2)
             collaborateur.save()
             
             # Create a new instance of the Salaire model
             salaire = Salaire.objects.create(
                 id_Collaborateur=collaborateur,
                 Date_de_salaire=month_year_str,
-                salaire_finale=salary,
+                salaire_finale=round(salary,2),
             )
             salaries.append(salaire)
         
@@ -239,7 +244,7 @@ def Salaries_agent(request):
 
 @admin_only
 def Salaries_admin(request):
-    collaborateurs = Collaborateur.objects.filter(Poste='CADRE')
+    collaborateurs = Collaborateur.objects.filter(Q(CSP='CADRE') | Q(CSP='TECHNICIEN'))
     activate('fr')
     current_date = datetime.now()
     month_year_str = current_date.strftime('%B %Y')
@@ -335,6 +340,7 @@ def Report_salaire_admin(request):
         context2 = Salaire_admin.objects.filter(Date_de_salaire=group)
 
     return render(request, 'admin_/salaire_complet/rapport Admin.html', {'collaborateur': context,'salaire': context2})
+
 @admin_only
 def VirementView(request):
     context = Collaborateur.objects.all()
@@ -347,11 +353,17 @@ def VirementView(request):
 
 @admin_only
 def enter_hours(request):
+    Cola=Collaborateur.objects.filter(CSP='AGENT')
+    current_date = datetime.now().date()
+    month_year_str = current_date.strftime('%B %Y')
+    second_month_date = datetime(current_date.year, 2, 1).date()
+    existing_salaries = Salaire.objects.filter(Date_de_salaire=month_year_str)
     if request.method == 'POST':
         form = HoursWorkedForm(request.POST)
         if form.is_valid():
             # Process the form data
-            for collaborateur in Collaborateur.objects.filter(Poste='Agent'):
+            for collaborateur in Cola:
+                print(collaborateur)
                 hours_worked = form.cleaned_data.get('hours_worked_{}'.format(collaborateur.id))
                 if hours_worked is not None:
                     collaborateur.Taux_Horaire = hours_worked  # Update Taux_Horaire with hours worked
@@ -361,3 +373,27 @@ def enter_hours(request):
     else:
         form = HoursWorkedForm()
     return render(request, 'admin_/HW.html', {'form': form})
+
+@admin_only
+def enter_primes(request):
+    Cola = Collaborateur.objects.filter(CSP='AGENT')
+    current_date = datetime.now().date()
+    month_year_str = current_date.strftime('%B %Y')
+    second_month_date = datetime(current_date.year, 2, 1).date()
+    existing_salaries = Salaire.objects.filter(Date_de_salaire=month_year_str)
+    
+    if request.method == 'POST':
+        form = PrimeForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            for collaborateur in Cola:
+                prime_amount = form.cleaned_data.get('prime_{}'.format(collaborateur.id))
+                if prime_amount is not None:
+                    collaborateur.Prime_Produit = prime_amount  # Update Prime_Produit with prime amount
+                    collaborateur.save()  # Save collaborateur object with updated Prime_Produit
+            # Redirect or display a success message
+            return redirect('table')  # Assuming 'table' is the name of the URL pattern to redirect to
+    else:
+        form = PrimeForm()
+    
+    return render(request, 'admin_/enter_primes.html', {'form': form})

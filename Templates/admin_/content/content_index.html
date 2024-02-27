@@ -1,6 +1,30 @@
 {% load static %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <div class="container-fluid py-4">
+      <!--
+      <form role="form text-center" method="POST" action="">
+        <div class="row">
+          <div class="col-xl-3 col-sm-6">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="mb-3 text-center">
+                        <label for="summary">Summary</label>
+                        <select class="form-select" name="summary" id="summary">
+                          <option selected>ALL ....</option>
+                          <option value="Week">Week</option>
+                          <option value="Month">Month</option>
+                          <option value="Year">Year</option>
+                        </select>
+                        <button type="submit" name="sign-up" value="sign-up" class="btn btn-primary w-100 my-4 mb-2">Sign up</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      </form> 
+      -->
       <div class="row">
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
@@ -17,7 +41,7 @@
                 </div>
                 <div class="col-4 text-end">
                   <div class="icon icon-shape rounded-circle bg-gradient-primary shadow text-center">
-                    <i class="fa fa-users" aria-hidden="true"></i>
+                    <i class="fa fa-users text-lg opacity-10" aria-hidden="true"></i>
                   </div>
                 </div>
               </div>
@@ -39,7 +63,7 @@
                 </div>
                 <div class="col-4 text-end">
                   <div class="icon icon-shape rounded-circle bg-gradient-primary shadow text-center">
-                    <i class="fa fa-users" aria-hidden="true"></i>
+                    <i class="fa fa-users text-lg opacity-10" aria-hidden="true"></i>
                   </div>
               </div>
               </div>
@@ -61,7 +85,7 @@
                 </div>
                 <div class="col-4 text-end">
                   <div class="icon icon-shape rounded-circle bg-gradient-primary shadow text-center">
-                    <i class="fa fa-percent" aria-hidden="true"></i>
+                    <i class="fa fa-percent text-lg opacity-10" aria-hidden="true"></i>
                   </div>
                 </div>
               </div>
@@ -91,14 +115,13 @@
           </div>
         </div>
       </div>
-      <div class="row mt-4">
-        <div class="col-lg-7 mb-lg-0 mb-4">
+      <div class="row mt-4" >
+        <div class="col-lg-7 mb-lg-0 mb-4" style="width:500px;">
           <div class="card">
             <div class="card-body p-3">
               <div class="row">
                 <canvas id="agentGenderChart" 
-                        width="50" 
-                        height="20" 
+                        style="display: block; box-sizing: border-box; height: 226px!important; width: 300px!important;"
                         data-collaborateur-man="{{ collaborateur_man }}" 
                         data-collaborateur-women="{{ collaborateur_women }}">
                 </canvas>
@@ -106,10 +129,18 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-5">
-          <div class="card h-100 p-3">
-            
-          </div>
+        <div class="col-lg-5" style="width:500px;">
+            <div class="card" style="width:400px; !important">
+              <div class="card-body p-3" style="">
+                <div class="row">
+                  <canvas id="agentActiveChart" 
+                          style="display: block; box-sizing: border-box; height: 226px!important; width: 400px!important;"
+                          data-collaborateur-canada="{{ collaborateur_canada }}" 
+                          data-collaborateur-france="{{ collaborateur_france }}">
+                  </canvas>
+                </div>
+              </div>
+            </div>
         </div>
       </div>
       <div class="row mt-4">
@@ -128,16 +159,21 @@
           
         </div>
       </div>
+    </div>
 
 
 
       <script>
         // JavaScript code for creating the pie chart
         const canvas = document.getElementById('agentGenderChart');
+        const canvas2 = document.getElementById('agentActiveChart');
         const collaborateurMan = parseInt(canvas.getAttribute('data-collaborateur-man'));
         const collaborateurWomen = parseInt(canvas.getAttribute('data-collaborateur-women'));
+        const collaborateurCanada = parseInt(canvas2.getAttribute('data-collaborateur-canada'));
+        const collaborateurFrance = parseInt(canvas2.getAttribute('data-collaborateur-france'));
         
         const ctx = canvas.getContext('2d');
+        const ctx2 = canvas2.getContext('2d');
         const agentGenderChart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -146,8 +182,8 @@
                     label: 'Agent Gender',
                     data: [collaborateurMan, collaborateurWomen],
                     backgroundColor: [
-                        'rgba(54, 162, 235, 0.5)', // Blue for Male
-                        'rgba(255, 99, 132, 0.5)'   // Red for Female
+                        'rgba(0, 0, 255, 1)', // Blue for Male
+                        'rgba(255, 0, 0, 1)'   // Red for Female
                     ],
                     borderColor: [
                         'rgba(54, 162, 235, 1)',
@@ -165,4 +201,42 @@
                 }
             }
         });
+    
+        const agentActiveChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['CANADA', 'FRANCE'],
+                datasets: [{
+                    label: 'Agent Activite',
+                    data: [collaborateurCanada, collaborateurFrance],
+                    backgroundColor: [
+                        'rgba(0, 0, 255, 1)', // Blue for Canada
+                        'rgba(255, 0, 0, 1)'   // Red for France
+                    ],
+                    borderColor: [
+                        'rgba(0, 0, 255, 1)',
+                        'rgba(255, 0, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                title: {
+                    display: true,
+                    text: 'Agent Active Distribution'
+                }
+            }
+        });
     </script>
+
+
+    <style>
+      element.style {
+        display: block;
+        box-sizing: border-box;
+        height: 226px;
+        width: 300px;
+    }
+    </style>
