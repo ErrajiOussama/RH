@@ -8,9 +8,9 @@
               </h6>
               <div class="header_search_form_container">
                 <form role="form text-center" action="{% url 'table' %}" method="GET"> 
-                  {{ myFilter.form }}
+                  <!--{{ myFilter.form }}-->
                   <div class="mb-3 text-center">
-                    <input type="search" name="Nom" class="form-control">
+                    <input type="search" name="Nom" class="form-control  text-center ">
                     <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn btn-primary">search</button>
                   </div>
                 </form>
@@ -23,7 +23,7 @@
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Collaborateur</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Statut</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nom</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" >Nom</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prenom</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Activite</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Sexe</th>
@@ -63,11 +63,11 @@
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.Statut }}</p>
                       </td>
-                      <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Nom }}</p>
+                      <td class="align-middle text-center fixed">
+                        <p class="text-xs font-weight-bold mb-0 fixed">{{ C.Nom }}</p>
                       </td>
-                      <td class="align-middle text-center">
-                        <p class="text-xs font-weight-bold mb-0">{{ C.Prenom }}</p>
+                      <td class="align-middle text-center fixed">
+                        <p class="text-xs font-weight-bold mb-0 fixed">{{ C.Prenom }}</p>
                       </td>
                       <td class="align-middle text-center">
                         <p class="text-xs font-weight-bold mb-0">{{ C.Activite }}</p>
@@ -178,3 +178,12 @@
           </div>
         </div>
       </div>
+
+      <style>
+        .fixed {
+          position: sticky;
+          left: 0;
+          z-index: 2; /* Ensure it's above other elements */
+          background-color: #ffffff; /* Adjust as needed */
+      }
+      </style>

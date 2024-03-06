@@ -1,0 +1,18 @@
+<div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header pb-0">
+            <h6>Heure de travail<br>
+                <form role="form text-center" method="POST" action="{% url 'CalculeF' %}">
+                        {% csrf_token %}
+                        <div class="mb-3 text-center">
+                            <input type="text"  name="TH" id="TH" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Calculate</button>
+                    </form>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>

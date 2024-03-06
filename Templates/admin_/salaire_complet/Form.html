@@ -79,7 +79,7 @@
         </tr>
         <tr colspan="2">
             <td style="width:40%;height:60px;">Nombre d'heures travaillées</td>
-            <td style="text-align : center">{{ collaborateur.Taux_Horaire }}</td>
+            <td style="text-align : center">{{ collaborateur.Nbre_d_heures_Travaillees }}</td>
         </tr>
         <tr colspan="2">
             <td style="width:40%;height:60px;">Base journalière
@@ -132,7 +132,7 @@
         </tr>
     </table>
     
-    <form action="{% url 'generate_pdf' id=collaborateur.id  %}" method="get">
+    <form action="{% url 'generate_pdf_Canada' id=collaborateur.id  %}" method="get">
         {% csrf_token %}  
         <button style="font-size: 20px; /* Adjust the font size as needed */
         padding: 20px 50px; /* Adjust the padding as needed */
