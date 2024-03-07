@@ -55,10 +55,9 @@
                       </td> 
                       <!---->
                       <td class="align-middle">
-                        <form action="{% url 'EditS' id=S.id_Collaborateur.id %}" method="get">
-                          {% csrf_token %}  
-                          <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
-                              Edit
+                        <form action="{% url 'EDSFrance' id=S.id_Collaborateur.id  %}" method="get">
+                          <button type="submit" value="submit"  class="btn bg-gradient-primary" data-toggle="tooltip" data-original-title="Edit user">
+                            EDS
                           </button> 
                         </form>
                       </td>

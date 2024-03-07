@@ -5,8 +5,6 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import *
-from admin_Sos.models import *
-from admin_Sos.forms import *
 from .decorators import *
 from django.db.models import F
 from datetime import datetime
@@ -128,10 +126,10 @@ def TableView_Canada(request):
 def TableView_Paie_Mod_Cana(request):
     current_date = datetime.now()
     month_year_str = current_date.strftime('%B %Y')
-    context = Collaborateur.objects.filter(Activite='CANADA')
-    context2=Salaire_CANADA.objects.filter(Date_de_salaire=month_year_str)
-
-    return render(request, 'admin_/salaire_complet/Modif Salaire Canada.html', {'collaborateur': context,'salaire':context2})
+    first_day_of_month = current_date.replace(day=1)
+    context = Collaborateur.objects.filter(Activite='CANADA').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)    
+    return render(request, 'admin_/salaire_complet/Modif Salaire Canada.html', {'collaborateur': context, 'salaire': context2})
 
 
 @login_required(login_url='login')
@@ -139,9 +137,18 @@ def TableView_Paie_Mod_Cana(request):
 def TableView_Paie_Mod_Fran(request):
     current_date = datetime.now()
     month_year_str = current_date.strftime('%B %Y')
-    context = Collaborateur.objects.filter(Activite='FRANCE')
-    context2=Salaire_CANADA.objects.filter(Date_de_salaire=month_year_str)
-    return render(request, 'admin_/salaire_complet/Salaries FRANCE.html', {'collaborateur': context,'salaire':context2})
+    
+   
+    first_day_of_month = current_date.replace(day=1)
+    
+    
+    context = Collaborateur.objects.filter(Activite='FRANCE').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    
+    
+    context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)
+    
+    return render(request, 'admin_/salaire_complet/Modif Salaire FRANCE.html', {'Collaborateur': context, 'salaire': context2})
+
 
 @login_required(login_url='login')
 @admin_only
@@ -216,7 +223,7 @@ def EditS_France_View(request,id):
         form = SalaireForm(data=request.POST,files=request.FILES,instance=instance)
         if form.is_valid():
             form.save()
-            return redirect('tableF')
+            return redirect('ModifSF')
     if request.method == "GET":
         form = SalaireForm(instance=instance)
     return render(request,'admin_/EditS.html',{'form':form,'collaborateur':instance})
@@ -307,29 +314,28 @@ def Salaries_agent_CANADA(request):
             return redirect('tableC') 
         for collaborateur in collaborateurs:
             if not collaborateur.Date_de_Sortie or collaborateur.Date_de_Sortie.year == current_date.year and collaborateur.Date_de_Sortie.month == current_date.month:
-                # Skip calculation if Date_de_Sortie is before the second month
-                continue    
-            th = collaborateur.Salaire_base / th_f
-            hours_of_work = collaborateur.Nbre_d_heures_Travaillees
-            prime = collaborateur.Prime_Produit
-            PrimeAvance = collaborateur.Avance_sur_salaire
-            collaborateur.Planifier=th_f
-            salary = round((hours_of_work * th) + prime - PrimeAvance,2)
-            collaborateur.S_H = round(th,2)
-            collaborateur.save()
+              
+                th = collaborateur.Salaire_base / th_f
+                hours_of_work = collaborateur.Nbre_d_heures_Travaillees
+                prime = collaborateur.Prime_Produit
+                PrimeAvance = collaborateur.Avance_sur_salaire
+                collaborateur.Planifier=th_f
+                salary = round((hours_of_work * th) + prime - PrimeAvance,2)
+                collaborateur.S_H = round(th,2)
+                collaborateur.save()
             
             # Create a new instance of the Salaire model
-            salaire = Salaire_CANADA.objects.create(
-                id_Collaborateur=collaborateur,
-                Date_de_salaire=month_year_str,
-                salaire_finale=round(salary,2),
-                Prime_Produit=prime,
-                Nbre_d_heures_Travaillees = hours_of_work,
-                Avance_sur_salaire= PrimeAvance,
-                S_H =round(th,2),
-                Planifier =  th_f,
-            )
-            salaries.append(salaire)
+                salaire = Salaire_CANADA.objects.create(
+                    id_Collaborateur=collaborateur,
+                    Date_de_salaire=month_year_str,
+                    salaire_finale=round(salary,2),
+                    Prime_Produit=prime,
+                    Nbre_d_heures_Travaillees = hours_of_work,
+                    Avance_sur_salaire= PrimeAvance,
+                    S_H =round(th,2),
+                    Planifier =  th_f,
+                )
+                salaries.append(salaire)
         
         context = {
             'collaborateurs': collaborateurs,
@@ -448,8 +454,6 @@ def generate_pdf_CANADA(request,id):
     
     return response
 
-from django.db.models.functions import ExtractMonth, ExtractYear
-
 @admin_only
 def Report_salaire_agent_canada(request):
     context = Collaborateur.objects.filter(Poste='Agent', Activite='CANADA')
@@ -480,11 +484,24 @@ def Report_salaire_agent_canada(request):
 def Report_salaire_agent_france(request):
     context = Collaborateur.objects.filter(Poste='Agent',Activite='FRANCE')
     context2 = Salaire_CANADA.objects.all()
-    if 'group' in request.GET and request.GET['group']:
-        group=request.GET['group']
-        context2 = Salaire_CANADA.objects.filter(Date_de_salaire=group)
-    else :
+    if 'month' in request.GET and 'Year' in request.GET:
+        month = request.GET['month']
+        year = request.GET['Year']
+        
+        if month:
+            if year:
+                # Combine month and year to match the format stored in Date_de_salaire field
+                month_year = f"{month} {year}"
+                context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year)
+            else:
+                # Filter data for the selected month across all years
+                context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=month)
+        elif year:
+            # Split the Date_de_salaire field into separate month and year components
+            context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=year)
+    else:
         context2 = Salaire_FRANCE.objects.all()
+
     return render(request, 'admin_/salaire_complet/rapport Agent_FRANCE.html', {'collaborateur': context,'salaire': context2})
 
 
@@ -526,7 +543,6 @@ def export_to_csv_Canada(request):
         SH = salaire.id_Collaborateur.S_H
         salaire = salaire.salaire_finale
         writer.writerow([nom, prenom, SH , taux_horaire, prime_produit, avance_sur_salaire,salaire])
-
     return response
 
 @admin_only
@@ -581,6 +597,7 @@ def modify_salary_France(request):
         month_year_str = current_date.strftime('%B %Y')        
         collaborateurs = Collaborateur.objects.filter(Activite='FRANCE')
         salaires = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)
+        
         for c in collaborateurs:
             try:
                 salaire = salaires.get(id_Collaborateur=c.id)
@@ -594,5 +611,4 @@ def modify_salary_France(request):
                 pass
                 
         return redirect('ModifSF')
-    
     return redirect('ModifSF')

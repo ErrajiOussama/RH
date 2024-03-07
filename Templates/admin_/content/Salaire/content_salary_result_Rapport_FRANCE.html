@@ -9,21 +9,29 @@
               <form role="form text-center" action="{% url 'rapport Agent France' %}" method="GET"> 
                 {% csrf_token %}
                 <div class="mb-3 text-center">
-                <label for="group">Month</label>
-                <select class="form-select" name="group" id="group">
-                  <option selected>Month ....</option>
-                  <option value="January 2024">January</option>
-                  <option value="February 2024">February</option>
-                  <option value="March 2024">March</option>
-                  <option value="April 2024">April</option>
-                  <option value="May 2024">May</option>
-                  <option value="June 2024">June</option>
-                  <option value="July 2024">July</option>
-                  <option value="August 2024">August</option>
-                  <option value="September 2024">September</option>
-                  <option value="October 2024">October</option>
-                  <option value="November 2024">November</option>
-                  <option value="December 2024">December</option>
+                <label for="month">Month</label>
+                <select class="form-select" name="month" id="month">
+                  <option selected></option>
+                  <option value="January">January</option>
+                  <option value="February">February</option>
+                  <option value="March">March</option>
+                  <option value="April">April</option>
+                  <option value="May">May</option>
+                  <option value="June">June</option>
+                  <option value="July">July</option>
+                  <option value="August">August</option>
+                  <option value="September">September</option>
+                  <option value="October">October</option>
+                  <option value="November">November</option>
+                  <option value="December">December</option>
+                </select>
+                <label for="Year">Year</label>
+                <select class="form-select" name="Year" id="Year">
+                  <option selected></option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
                 </select>
                 <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn btn-primary">search</button>
               </div>
