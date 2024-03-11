@@ -11,12 +11,14 @@ from datetime import datetime
 from django.db.models import Q
 from django.utils.translation import activate
 from django.template.loader import get_template
-from django.db.models.functions import Substr
 from .filter import * 
 from django.shortcuts import get_object_or_404
 import jinja2
 import pdfkit
 import csv
+import pandas as pd
+from django.shortcuts import render
+from django.contrib import messages
 
 @login_required(login_url='login')
 def IndexView(request):
@@ -95,7 +97,6 @@ def Adimn_view(request):
     }
     return render(request,'admin_/home_admin.html',context)
 
-from django.db.models import Q
 
 @login_required(login_url='login')
 @admin_only
@@ -117,6 +118,13 @@ def TableView(request):
 def TableView_Canada(request):
     
     context = Collaborateur.objects.filter(Activite='CANADA')
+    nom_query = request.GET.get('Nom', '')
+    prenom_query = request.GET.get('Nom', '')
+
+    if nom_query or prenom_query:
+        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query) | Q(Prenom__icontains=prenom_query))
+    else:
+        context= Collaborateur.objects.filter(Activite='CANADA')
     context2 = Salaire_CANADA.objects.all()
 
     return render(request, 'admin_/salaire_complet/Salaries CANADA.html', {'collaborateur': context,'salaire':context2})
@@ -226,7 +234,7 @@ def EditS_France_View(request,id):
             return redirect('ModifSF')
     if request.method == "GET":
         form = SalaireForm(instance=instance)
-    return render(request,'admin_/EditS.html',{'form':form,'collaborateur':instance})
+    return render(request,'admin_/EditSF.html',{'form':form,'collaborateur':instance})
 
 @login_required(login_url='login')
 @admin_only
@@ -612,3 +620,102 @@ def modify_salary_France(request):
                 
         return redirect('ModifSF')
     return redirect('ModifSF')
+
+def import_csv_and_update_agentsF(request):
+    if request.method == 'POST':
+        if request.FILES.get('excel_file'):
+            excel_file = request.FILES['excel_file']
+            print("File uploaded successfully:", excel_file.name)
+
+            df = pd.read_excel(excel_file, engine='openpyxl')
+            print("Excel file read successfully.")
+
+            for index, row in df.iterrows():
+                if pd.isna(row['Agent']) or row['Agent'] == '':
+                    continue
+                print(1)
+                NP = row['Agent'] 
+                print(NP)
+                agent_names = NP.split()
+                if len(agent_names) >= 2:
+                    print("Agent names:", agent_names)
+                    nom = agent_names[0]
+                    prenom = ' '.join(agent_names[1:])
+                    print(nom, prenom)
+                else:
+                    messages.warning(request, f'Invalid agent name format: {NP}. Expected format is "Nom Prenom".')
+                    continue
+                    
+                try:
+                    agent = Collaborateur.objects.get(Nom=nom, Prenom=prenom)
+                    print("Agent found:", agent)
+                except Collaborateur.DoesNotExist:
+                    messages.warning(request, f'Agent with nom {nom} and prenom {prenom} not found.')
+                    continue
+
+                realise_h = row['Total H']
+                Prime=row['Prime PROD']
+                Avance=row['Avance sur salaire'] 
+                print(realise_h)
+                print(Prime)
+                print(Avance)
+                agent.Nbre_d_heures_Travaillees = realise_h
+                agent.Prime_Produit=Prime
+                agent.Avance_sur_salaire=Avance
+                agent.save()
+                print("Agent data updated:", agent)
+
+            messages.success(request, 'Agent data updated successfully.')
+            
+        else:
+            print("No file uploaded.")
+
+    return redirect('ModifSF')
+
+def import_csv_and_update_agentsC(request):
+    if request.method == 'POST':
+        if request.FILES.get('excel_file'):
+            excel_file = request.FILES['excel_file']
+            print("File uploaded successfully:", excel_file.name)
+
+            df = pd.read_excel(excel_file, engine='openpyxl')
+            print("Excel file read successfully.")
+
+            for index, row in df.iterrows():
+                print(1)
+                N = row['Nom']
+                P = row['Prenom']
+
+                # Check if the value is not a NaT object before stripping
+                if not pd.isna(N):
+                    N = N.strip()  # Remove leading and trailing spaces
+                if not pd.isna(P):
+                    P = P.strip()  # Remove leading and trailing spaces
+
+                print(N) 
+                print(P)
+                try:
+                    agent = Collaborateur.objects.get(Nom=N, Prenom=P)
+                    print("Agent found:", agent)
+                except Collaborateur.DoesNotExist:
+                    messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
+                    continue
+
+                realise_h = row['total']
+                Prime = row['Prime PROD']
+                Avance = row['Avance sur salaire'] 
+                print(realise_h)
+                print(Prime)
+                print(Avance)
+                agent.Nbre_d_heures_Travaillees = realise_h
+                agent.Prime_Produit = Prime
+                agent.Avance_sur_salaire = Avance
+                agent.save()
+                print("Agent data updated:", agent)
+
+            messages.success(request, 'Agent data updated successfully.')
+            
+        else:
+            print("No file uploaded.")
+
+    return redirect('ModifSC')

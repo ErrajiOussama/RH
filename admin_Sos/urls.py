@@ -34,4 +34,6 @@ urlpatterns = [
   path('CSV', views.export_to_csv_France, name='CSV_FRANCE'),
   path('Recalculer', views.modify_salary_CANADA, name='Recalculer'),
   path('RecalculerF', views.modify_salary_France, name='RecalculerF'),
+  path('ImportF', views.import_csv_and_update_agentsF, name='ImportF'),
+  path('ImportC', views.import_csv_and_update_agentsC, name='ImportC'),
 ]

@@ -77,6 +77,21 @@
             </table>
           </div>
         </div>
+        <form id="importForm" action="{% url 'ImportF' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="container-fluid py-4">
+              <input type="file" name="excel_file" id="excelFileInput" style="display: none;">
+              <label for="excelFileInput" class="btn btn-primary">Import Excel</label>
+              <button type="submit" id="importExcelBtn" style="display: none;">Submit</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+
+
+  <script>
+    document.getElementById('excelFileInput').addEventListener('change', function() {
+        document.getElementById('importExcelBtn').click();
+    });
+    </script>
