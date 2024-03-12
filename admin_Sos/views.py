@@ -631,26 +631,20 @@ def import_csv_and_update_agentsF(request):
             print("Excel file read successfully.")
 
             for index, row in df.iterrows():
-                if pd.isna(row['Agent']) or row['Agent'] == '':
-                    continue
-                print(1)
-                NP = row['Agent'] 
-                print(NP)
-                agent_names = NP.split()
-                if len(agent_names) >= 2:
-                    print("Agent names:", agent_names)
-                    nom = agent_names[0]
-                    prenom = ' '.join(agent_names[1:])
-                    print(nom, prenom)
-                else:
-                    messages.warning(request, f'Invalid agent name format: {NP}. Expected format is "Nom Prenom".')
-                    continue
-                    
+                   
+                N = row['Nom']
+                P = row['Prenom']
+                
+                if not pd.isna(N):
+                    N = N.strip()
+                if not pd.isna(P):
+                    P = P.strip() 
+
                 try:
-                    agent = Collaborateur.objects.get(Nom=nom, Prenom=prenom)
-                    print("Agent found:", agent)
+                    agent = Collaborateur.objects.get(Nom=N, Prenom=P)
+
                 except Collaborateur.DoesNotExist:
-                    messages.warning(request, f'Agent with nom {nom} and prenom {prenom} not found.')
+                    messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
 
                 realise_h = row['Total H']
@@ -676,27 +670,22 @@ def import_csv_and_update_agentsC(request):
     if request.method == 'POST':
         if request.FILES.get('excel_file'):
             excel_file = request.FILES['excel_file']
-            print("File uploaded successfully:", excel_file.name)
-
+            
             df = pd.read_excel(excel_file, engine='openpyxl')
-            print("Excel file read successfully.")
 
             for index, row in df.iterrows():
-                print(1)
+                
                 N = row['Nom']
                 P = row['Prenom']
-
-                # Check if the value is not a NaT object before stripping
+                
                 if not pd.isna(N):
-                    N = N.strip()  # Remove leading and trailing spaces
+                    N = N.strip()
                 if not pd.isna(P):
-                    P = P.strip()  # Remove leading and trailing spaces
+                    P = P.strip() 
 
-                print(N) 
-                print(P)
                 try:
                     agent = Collaborateur.objects.get(Nom=N, Prenom=P)
-                    print("Agent found:", agent)
+
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
@@ -704,14 +693,11 @@ def import_csv_and_update_agentsC(request):
                 realise_h = row['total']
                 Prime = row['Prime PROD']
                 Avance = row['Avance sur salaire'] 
-                print(realise_h)
-                print(Prime)
-                print(Avance)
                 agent.Nbre_d_heures_Travaillees = realise_h
                 agent.Prime_Produit = Prime
                 agent.Avance_sur_salaire = Avance
                 agent.save()
-                print("Agent data updated:", agent)
+
 
             messages.success(request, 'Agent data updated successfully.')
             

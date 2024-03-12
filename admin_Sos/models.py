@@ -148,6 +148,11 @@ class Salaire_CANADA(models.Model):
     S_H = models.FloatField(default=0,null=True, blank=True)
     Planifier= models.FloatField(default=0,null=True,blank=True)
 
+class RH(models.Model):
+    collaborateur_Turnover=models.FloatField(default=0,null=True, blank=True)
+    masse_salarial= models.BigIntegerField(null=True, blank=True)
+    date_rh = MonthYearField(null=True, blank=True)
+
 class Salaire_FRANCE(models.Model):
     id_Collaborateur=models.ForeignKey(Collaborateur,on_delete=models.CASCADE)
     Date_de_salaire = MonthYearField(null=True, blank=True)
