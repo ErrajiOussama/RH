@@ -127,6 +127,10 @@ class Collaborateur(models.Model):
             today = date.today()
             age = today.year - self.Date_de_naissance.year - ((today.month, today.day) < (self.Date_de_naissance.month, self.Date_de_naissance.day))
             self.Age = age
+            
+        if self.Date_de_Sortie:
+            # Set the Statut to "INACTIF"
+            self.Statut = 'INACTIF'
 
         super().save(*args, **kwargs)
     

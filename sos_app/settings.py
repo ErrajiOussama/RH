@@ -15,12 +15,13 @@ SECRET_KEY = 'django-insecure-wge$+(hgmz+x#=dy@9o9wvt4+9n(2)gghp(o44*m&v@pbyl80e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = []
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,6 +34,8 @@ INSTALLED_APPS = [
     'django_filters',
 ]
 
+ASGI_APPLICATION = 'sos_app.asgi.application'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -44,6 +47,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'sos_app.urls'
+
+
 
 TEMPLATES = [
     {

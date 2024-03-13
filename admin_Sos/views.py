@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login ,logout
+from django.utils.timezone import make_aware
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import *
+from datetime import datetime, timedelta
 from .decorators import *
 from django.db.models import F
 from datetime import datetime
@@ -69,22 +71,29 @@ def registerPageView(request):
 @login_required(login_url='login')
 @admin_only
 def Adimn_view(request):
-
+    current_date = datetime.now().date()
     collaborateur_inactif=Collaborateur.objects.filter(Statut='INACTIF').count()
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
     collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F',Statut='ACTIF').count()
     collaborateur_france=Collaborateur.objects.filter(Activite='FRANCE',Statut='ACTIF').count()
     collaborateur_canada=Collaborateur.objects.filter(Activite='CANADA',Statut='ACTIF').count()
-    c=1
-    collaborateur1=Collaborateur.objects.get(id=1)
-    salaire_som=collaborateur1.Salaire_base
+    salaire_som=0
     for collaborateur in Collaborateur.objects.all():
-        if c > 1 :
-            salaire_som=collaborateur.Salaire_base+ salaire_som
-        c=c+1 
-    collaborateur_Turnover= round((Collaborateur.objects.filter(Statut='INACTIF').count()/Collaborateur.objects.all().count())*100, 2)
+        if not collaborateur.Date_de_Sortie or collaborateur.Date_de_Sortie.year == current_date.year and collaborateur.Date_de_Sortie.month == current_date.month:
+                salaire_som=collaborateur.Salaire_base+ salaire_som
+
+    inactive_agents_this_month=0
+    for collaborateur in Collaborateur.objects.filter(Activite="CANADA",Statut="INACTIF"):
+        if not collaborateur.Date_de_Sortie or collaborateur.Date_de_Sortie.year == current_date.year and collaborateur.Date_de_Sortie.month == current_date.month:
+            inactive_agents_this_month=inactive_agents_this_month + 1
     
+    all_agents_this_month = Collaborateur.objects.filter(
+    Q(Date_de_Sortie__contains=current_date.month) | Q(Date_de_Sortie__isnull=True)
+    )
+    total_agents_this_month = all_agents_this_month.count()
+    turnover_percentage = round((inactive_agents_this_month / total_agents_this_month) * 100, 2)
+
     context={
         'collaborateur_Actif':collaborateur_actif,
         'collaborateur_Inactif':collaborateur_inactif,
@@ -92,7 +101,7 @@ def Adimn_view(request):
         'collaborateur_women':collaborateur_Women,
         'collaborateur_france':collaborateur_france,
         'collaborateur_canada':collaborateur_canada,
-        'collaborateur_Turnover':collaborateur_Turnover,
+        'collaborateur_Turnover':turnover_percentage,
         'salaire_max':salaire_som,
     }
     return render(request,'admin_/home_admin.html',context)
@@ -464,7 +473,6 @@ def generate_pdf_CANADA(request,id):
 
 @admin_only
 def Report_salaire_agent_canada(request):
-    context = Collaborateur.objects.filter(Poste='Agent', Activite='CANADA')
     context2 = Salaire_CANADA.objects.all()
 
     if 'month' in request.GET and 'Year' in request.GET:
@@ -485,13 +493,33 @@ def Report_salaire_agent_canada(request):
     else:
         context2 = Salaire_CANADA.objects.all()
 
-    return render(request, 'admin_/salaire_complet/rapport Agent_CANADA.html', {'collaborateur': context, 'salaire': context2})
+    return render(request, 'admin_/salaire_complet/rapport Agent_CANADA.html', {'salaire': context2})
 
 
 @admin_only
 def Report_salaire_agent_france(request):
-    context = Collaborateur.objects.filter(Poste='Agent',Activite='FRANCE')
     context2 = Salaire_CANADA.objects.all()
+    if 'month' in request.GET and 'Year' in request.GET:
+        month = request.GET['month']
+        year = request.GET['Year']
+        
+        if month:
+            if year:
+                month_year = f"{month} {year}"
+                context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year)
+            else:
+                context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=month)
+        elif year:
+            context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=year)
+    else:
+        context2 = Salaire_FRANCE.objects.all()
+    return render(request, 'admin_/salaire_complet/rapport Agent_FRANCE.html', {'salaire': context2})
+
+
+@admin_only
+def Report_salaire_admin(request):
+    context2 = Salaire_admin.objects.all()
+
     if 'month' in request.GET and 'Year' in request.GET:
         month = request.GET['month']
         year = request.GET['Year']
@@ -500,28 +528,16 @@ def Report_salaire_agent_france(request):
             if year:
                 # Combine month and year to match the format stored in Date_de_salaire field
                 month_year = f"{month} {year}"
-                context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year)
+                context2 = Salaire_admin.objects.filter(Date_de_salaire=month_year)
             else:
                 # Filter data for the selected month across all years
-                context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=month)
+                context2 = Salaire_admin.objects.filter(Date_de_salaire__contains=month)
         elif year:
             # Split the Date_de_salaire field into separate month and year components
-            context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=year)
+            context2 = Salaire_admin.objects.filter(Date_de_salaire__contains=year)
     else:
-        context2 = Salaire_FRANCE.objects.all()
-
-    return render(request, 'admin_/salaire_complet/rapport Agent_FRANCE.html', {'collaborateur': context,'salaire': context2})
-
-
-@admin_only
-def Report_salaire_admin(request):
-    context = Collaborateur.objects.filter(Poste='Admin')
-    context2 = Salaire_admin.objects.all()
-    if 'group' in request.GET and request.GET['group']:
-        group=request.GET['group']
-        context2 = Salaire_admin.objects.filter(Date_de_salaire=group)
-
-    return render(request, 'admin_/salaire_complet/rapport Admin.html', {'collaborateur': context,'salaire': context2})
+        context2 = Salaire_admin.objects.all()
+    return render(request, 'admin_/salaire_complet/rapport Admin.html', {'salaire': context2})
 
 @admin_only
 def VirementView(request):
@@ -529,9 +545,7 @@ def VirementView(request):
     context2 = Salaire_CANADA.objects.all()
     context4 = Salaire_FRANCE.objects.all()
     context3 = Salaire_admin.objects.all()
-
     salaire = list(context2) + list(context3) + list(context4)
-
     return render(request, 'admin_/salaire_complet/Virement.html', {'collaborateur': context, 'salaire': salaire})
 
 @admin_only
@@ -541,7 +555,6 @@ def export_to_csv_Canada(request):
     response['Content-Disposition'] = 'attachment; filename=Canada_export.csv'
     writer = csv.writer(response)
     writer.writerow(['Nom', 'Prenom', 'Salaire/Heure', 'Nbre_d_heures_Travaillees', 'Prime_Produit', 'Avance_sur_salaire','salaire_finale'])
-
     for salaire in Canada_salaires:
         nom = salaire.id_Collaborateur.Nom  
         prenom = salaire.id_Collaborateur.Prenom 
@@ -698,10 +711,15 @@ def import_csv_and_update_agentsC(request):
                 agent.Avance_sur_salaire = Avance
                 agent.save()
 
-
             messages.success(request, 'Agent data updated successfully.')
             
         else:
             print("No file uploaded.")
 
     return redirect('ModifSC')
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['Agent'])
+def userPage(request):
+    context = {}
+    return render(request, 'Agent/compte.html', context)

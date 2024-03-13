@@ -36,4 +36,5 @@ urlpatterns = [
   path('RecalculerF', views.modify_salary_France, name='RecalculerF'),
   path('ImportF', views.import_csv_and_update_agentsF, name='ImportF'),
   path('ImportC', views.import_csv_and_update_agentsC, name='ImportC'),
+  path('Userpage', views.userPage, name='Userpage'),
 ]

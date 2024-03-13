@@ -40,13 +40,6 @@
                     <td class="align-middle text-center">
                       <p class="text-xs font-weight-bold mb-0">{{ S.salaire_finale }}</p>
                     </td>
-                    <td class="align-middle">
-                      <form action="{% url 'EDS' id=S.id_Collaborateur.id  %}" method="get">
-                      <button type="submit" value="submit"  class="btn bg-gradient-primary" data-toggle="tooltip" data-original-title="Edit user">
-                        EDS
-                      </button> 
-                    </form>
-                    </td> 
                   </tr>
                   {% endfor %}
                 </tbody>

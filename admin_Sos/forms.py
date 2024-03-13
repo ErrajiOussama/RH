@@ -20,8 +20,7 @@ class SalaireForm(forms.ModelForm):
 
 class registerForm(UserCreationForm):
     id = forms.IntegerField(label='Collaborator ID', required=False)    
-
- 
+    
     def clean(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
@@ -33,28 +32,3 @@ class registerForm(UserCreationForm):
         model = User
         fields = ['username','password1','password2','id']
 
-
-
-class HoursWorkedForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super(HoursWorkedForm, self).__init__(*args, **kwargs)
-        for collaborateur in Collaborateur.objects.filter(CSP='AGENT'):
-            label = 'Hours worked for {} {}'.format(collaborateur.Prenom, collaborateur.Nom)
-            self.fields['hours_worked_{}'.format(collaborateur.id)] = forms.DecimalField(label=label, required=False)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        # You can add custom validation logic here if needed
-        return cleaned_data
-
-class PrimeForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super(PrimeForm, self).__init__(*args, **kwargs)
-        for collaborateur in Collaborateur.objects.filter(CSP='AGENT'):
-            label = 'Prime for {} {}'.format(collaborateur.Prenom, collaborateur.Nom)
-            self.fields['prime_{}'.format(collaborateur.id)] = forms.DecimalField(label=label, required=False)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        # You can add custom validation logic here if needed
-        return cleaned_data
