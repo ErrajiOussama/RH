@@ -719,7 +719,7 @@ def import_csv_and_update_agentsC(request):
     return redirect('ModifSC')
 
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['Agent'])
 def userPage(request):
-    context = {}
+    collaborateur = Collaborateur.objects.get(user=request.user)
+    context = {'collaborateur':collaborateur}
     return render(request, 'Agent/compte.html', context)
