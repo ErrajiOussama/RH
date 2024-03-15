@@ -703,7 +703,7 @@ def import_csv_and_update_agentsC(request):
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
 
-                realise_h = row['total']
+                realise_h = row['H Realise']
                 Prime = row['Prime PROD']
                 Avance = row['Avance sur salaire'] 
                 agent.Nbre_d_heures_Travaillees = realise_h
