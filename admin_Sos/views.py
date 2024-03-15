@@ -705,14 +705,20 @@ def import_csv_and_update_agentsC(request):
 
                 realise_h = row['H Realise']
                 Prime = row['Prime PROD']
-                Avance = row['Avance sur salaire'] 
+                Avance = row['Avance sur salaire']
+
+                if pd.isna(Prime):
+                    Prime = 0
+
+                if pd.isna(Avance):
+                    Avance = 0
+
                 agent.Nbre_d_heures_Travaillees = realise_h
                 agent.Prime_Produit = Prime
                 agent.Avance_sur_salaire = Avance
                 agent.save()
 
             messages.success(request, 'Agent data updated successfully.')
-            
         else:
             print("No file uploaded.")
 
