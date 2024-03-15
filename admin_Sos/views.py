@@ -6,9 +6,8 @@ from django.utils.timezone import make_aware
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import *
-from datetime import datetime, timedelta
+from datetime import datetime
 from .decorators import *
-from django.db.models import F
 from datetime import datetime
 from django.db.models import Q
 from django.utils.translation import activate
@@ -113,23 +112,19 @@ def TableView(request):
     context = Collaborateur.objects.all()
     nom_query = request.GET.get('Nom', '')
     prenom_query = request.GET.get('Nom', '')
-
     if nom_query or prenom_query:
         context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query) | Q(Prenom__icontains=prenom_query))
     else:
         context= Collaborateur.objects.all()
-
     return render(request, 'admin_/tables.html', {'collaborateur': context})
 
 
 @login_required(login_url='login')
 @admin_only
 def TableView_Canada(request):
-    
     context = Collaborateur.objects.filter(Activite='CANADA')
     nom_query = request.GET.get('Nom', '')
     prenom_query = request.GET.get('Nom', '')
-
     if nom_query or prenom_query:
         context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query) | Q(Prenom__icontains=prenom_query))
     else:
@@ -154,16 +149,9 @@ def TableView_Paie_Mod_Cana(request):
 def TableView_Paie_Mod_Fran(request):
     current_date = datetime.now()
     month_year_str = current_date.strftime('%B %Y')
-    
-   
     first_day_of_month = current_date.replace(day=1)
-    
-    
     context = Collaborateur.objects.filter(Activite='FRANCE').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
-    
-    
     context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)
-    
     return render(request, 'admin_/salaire_complet/Modif Salaire FRANCE.html', {'Collaborateur': context, 'salaire': context2})
 
 
@@ -172,7 +160,6 @@ def TableView_Paie_Mod_Fran(request):
 def TableView_France(request):
     context = Collaborateur.objects.filter(Activite='FRANCE')
     context2 = Salaire_FRANCE.objects.all()
-
     return render(request, 'admin_/salaire_complet/Salaries FRANCE.html', {'collaborateur': context, 'salaire':context2})
 
 @login_required(login_url='login')
@@ -309,7 +296,6 @@ def Salaries_calculer(request):
         context = Salaire_CANADA.objects.filter(id_Collaborateur=id)
     else:
         context = Salaire_CANADA.objects.all()
-
     return render(request, 'admin_/salaire_complet/tables salaire.html', {'salaire': context})
 
 @admin_only
@@ -320,40 +306,31 @@ def Salaries_agent_CANADA(request):
         activate('fr')
         current_date = datetime.now().date()
         month_year_str = current_date.strftime('%B %Y')
-        
         # Check if a salary entry already exists for the current month
-
         salaries = []  # List to store all Salaire instances
         existing_salaries = Salaire_CANADA.objects.filter(Date_de_salaire=month_year_str)
-
         # If salary entries already exist for the current month, redirect to another page
         if existing_salaries.exists():
             return redirect('tableC') 
         for collaborateur in collaborateurs:
-            if not collaborateur.Date_de_Sortie or collaborateur.Date_de_Sortie.year == current_date.year and collaborateur.Date_de_Sortie.month == current_date.month:
-              
+            if not collaborateur.Date_de_Sortie or collaborateur.Date_de_Sortie.year == current_date.year and collaborateur.Date_de_Sortie.month == current_date.month:  
                 th = collaborateur.Salaire_base / th_f
-                hours_of_work = collaborateur.Nbre_d_heures_Travaillees
-                prime = collaborateur.Prime_Produit
-                PrimeAvance = collaborateur.Avance_sur_salaire
                 collaborateur.Planifier=th_f
-                salary = round((hours_of_work * th) + prime - PrimeAvance,2)
+                salary = round((collaborateur.Nbre_d_heures_Travaillees * th) + collaborateur.Prime_Produit - collaborateur.Avance_sur_salaire,2)
                 collaborateur.S_H = round(th,2)
                 collaborateur.save()
-            
             # Create a new instance of the Salaire model
                 salaire = Salaire_CANADA.objects.create(
                     id_Collaborateur=collaborateur,
                     Date_de_salaire=month_year_str,
                     salaire_finale=round(salary,2),
-                    Prime_Produit=prime,
-                    Nbre_d_heures_Travaillees = hours_of_work,
-                    Avance_sur_salaire= PrimeAvance,
+                    Prime_Produit=collaborateur.Prime_Produit,
+                    Nbre_d_heures_Travaillees = collaborateur.Nbre_d_heures_Travaillees,
+                    Avance_sur_salaire= collaborateur.Avance_sur_salaire,
                     S_H =round(th,2),
                     Planifier =  th_f,
                 )
                 salaries.append(salaire)
-        
         context = {
             'collaborateurs': collaborateurs,
             'salaire': salaries,
@@ -371,40 +348,30 @@ def Salaries_agent_FRANCE(request):
         activate('fr')
         current_date = datetime.now().date()
         month_year_str = current_date.strftime('%B %Y')
-        
         # Check if a salary entry already exists for the current month
         existing_salaries = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)
-        
         # If salary entries already exist for the current month, redirect to another page
         if existing_salaries.exists():
             return redirect('tableF') 
-        
         salaries = []  # List to store all Salaire instances
-        
         for collaborateur in collaborateurs:
             if not collaborateur.Date_de_Sortie or collaborateur.Date_de_Sortie.year == current_date.year and collaborateur.Date_de_Sortie.month == current_date.month:
                 th = collaborateur.Salaire_base / th_f
-                hours_of_work = collaborateur.Nbre_d_heures_Travaillees
-                prime = collaborateur.Prime_Produit
-                PrimeAvance = collaborateur.Avance_sur_salaire
                 collaborateur.Planifier = th_f
-                salary = round((hours_of_work * th) + prime - PrimeAvance, 2)
+                salary = round((collaborateur.Nbre_d_heures_Travaillees * th) + collaborateur.Prime_Produit - collaborateur.Avance_sur_salaire, 2)
                 collaborateur.S_H = round(th, 2)
                 collaborateur.save()
-                
-                # Create a new instance of the Salaire model
                 salaire = Salaire_FRANCE.objects.create(
                     id_Collaborateur=collaborateur,
                     Date_de_salaire=month_year_str,
                     salaire_finale=round(salary, 2),
-                    Prime_Produit=prime,
-                    Nbre_d_heures_Travaillees=hours_of_work,
-                    Avance_sur_salaire=PrimeAvance,
+                    Prime_Produit=collaborateur.Prime_Produit,
+                    Nbre_d_heures_Travaillees=collaborateur.Nbre_d_heures_Travaillees,
+                    Avance_sur_salaire=collaborateur.Avance_sur_salaire,
                     S_H=round(th, 2),
                     Planifier=th_f,
                 )
                 salaries.append(salaire)
-        
         context = {
             'collaborateurs': collaborateurs,
             'salaire': salaries,
@@ -412,7 +379,6 @@ def Salaries_agent_FRANCE(request):
             'moin': month_year_str
         }
         return render(request, 'admin_/salaire_complet/Salaries FRANCE.html', context)
-    
     return render(request, 'admin_/salaire_complet/Salaries CalculeF.html')
 
 
@@ -424,14 +390,12 @@ def Salaries_admin(request):
     month_year_str = current_date.strftime('%B %Y')
     salaries = []  # List to store all Salaire instances
     existing_salaries = Salaire_admin.objects.filter(Date_de_salaire=month_year_str)
-
         # If salary entries already exist for the current month, redirect to another page
     if existing_salaries.exists():
         return redirect('rapport Admin') 
     for collaborateur in collaborateurs:
         Days_ofwork= collaborateur.Nombre_de_Jour_Travaille_Admin
         salary = round((collaborateur.Salaire_base / 22) * Days_ofwork-collaborateur.Avance_sur_salaire, 2)
-        
         collaborateur.save()
             # Create a new instance of the Salaire model
         salaire = Salaire_admin.objects.create(
@@ -440,7 +404,6 @@ def Salaries_admin(request):
             salaire_finale=salary,
         )
         salaries.append(salaire)
-        
     context = {
         'collaborateurs': collaborateurs,
         'salaire': salaries,
@@ -454,31 +417,24 @@ def generate_pdf_CANADA(request,id):
     collaborateur = get_object_or_404(Collaborateur, id=id)
     salaire = Salaire_CANADA.objects.get(id_Collaborateur=id)
     context = {'collaborateur': collaborateur,'salaire':salaire}
-
     # Render Jinja2 template
     template = get_template('admin_/salaire_complet/Form.html')
     html = template.render(context)
-    
     # Configure pdfkit
     config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-
     # Convert HTML to PDF
     pdf_content = pdfkit.from_string(html, False, configuration=config)
-
     # Create an HttpResponse with PDF content
     response = HttpResponse(pdf_content, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="output.pdf"'
-    
     return response
 
 @admin_only
 def Report_salaire_agent_canada(request):
     context2 = Salaire_CANADA.objects.all()
-
     if 'month' in request.GET and 'Year' in request.GET:
         month = request.GET['month']
         year = request.GET['Year']
-        
         if month:
             if year:
                 # Combine month and year to match the format stored in Date_de_salaire field
@@ -492,7 +448,6 @@ def Report_salaire_agent_canada(request):
             context2 = Salaire_CANADA.objects.filter(Date_de_salaire__contains=year)
     else:
         context2 = Salaire_CANADA.objects.all()
-
     return render(request, 'admin_/salaire_complet/rapport Agent_CANADA.html', {'salaire': context2})
 
 
@@ -502,7 +457,6 @@ def Report_salaire_agent_france(request):
     if 'month' in request.GET and 'Year' in request.GET:
         month = request.GET['month']
         year = request.GET['Year']
-        
         if month:
             if year:
                 month_year = f"{month} {year}"
@@ -519,11 +473,9 @@ def Report_salaire_agent_france(request):
 @admin_only
 def Report_salaire_admin(request):
     context2 = Salaire_admin.objects.all()
-
     if 'month' in request.GET and 'Year' in request.GET:
         month = request.GET['month']
         year = request.GET['Year']
-        
         if month:
             if year:
                 # Combine month and year to match the format stored in Date_de_salaire field
@@ -573,7 +525,6 @@ def export_to_csv_France(request):
     response['Content-Disposition'] = 'attachment; filename=Canada_export.csv'
     writer = csv.writer(response)
     writer.writerow(['Nom', 'Prenom', 'Salaire/Heure', 'Nbre_d_heures_Travaillees', 'Prime_Produit', 'Avance_sur_salaire','salaire_finale'])
-
     for salaire in Canada_salaires:
         nom = salaire.id_Collaborateur.Nom  
         prenom = salaire.id_Collaborateur.Prenom 
@@ -583,7 +534,6 @@ def export_to_csv_France(request):
         SH = salaire.S_H
         salaire = salaire.salaire_finale
         writer.writerow([nom, prenom, SH , taux_horaire, prime_produit, avance_sur_salaire,salaire])
-
     return response
 
 @admin_only
@@ -618,7 +568,6 @@ def modify_salary_France(request):
         month_year_str = current_date.strftime('%B %Y')        
         collaborateurs = Collaborateur.objects.filter(Activite='FRANCE')
         salaires = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)
-        
         for c in collaborateurs:
             try:
                 salaire = salaires.get(id_Collaborateur=c.id)
@@ -638,89 +587,65 @@ def import_csv_and_update_agentsF(request):
         if request.FILES.get('excel_file'):
             excel_file = request.FILES['excel_file']
             print("File uploaded successfully:", excel_file.name)
-
             df = pd.read_excel(excel_file, engine='openpyxl')
             print("Excel file read successfully.")
-
-            for index, row in df.iterrows():
-                   
+            for index, row in df.iterrows():      
                 N = row['Nom']
-                P = row['Prenom']
-                
+                P = row['Prenom']   
                 if not pd.isna(N):
                     N = N.strip()
                 if not pd.isna(P):
                     P = P.strip() 
-
                 try:
                     agent = Collaborateur.objects.get(Nom=N, Prenom=P)
-
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-
                 realise_h = row['Total H']
                 Prime=row['Prime PROD']
-                Avance=row['Avance sur salaire'] 
-                
+                Avance=row['Avance sur salaire']    
                 if pd.isna(Prime):
                     Prime = 0
-
                 if pd.isna(Avance):
-                    Avance = 0
-                
+                    Avance = 0  
                 agent.Nbre_d_heures_Travaillees = realise_h
                 agent.Prime_Produit=Prime
                 agent.Avance_sur_salaire=Avance
                 agent.save()
                 print("Agent data updated:", agent)
-
             messages.success(request, 'Agent data updated successfully.')
-            
         else:
             print("No file uploaded.")
-
     return redirect('ModifSF')
 
 def import_csv_and_update_agentsC(request):
     if request.method == 'POST':
         if request.FILES.get('excel_file'):
             excel_file = request.FILES['excel_file']
-            
             df = pd.read_excel(excel_file, engine='openpyxl')
-
-            for index, row in df.iterrows():
-                
+            for index, row in df.iterrows():    
                 N = row['Nom']
-                P = row['Prenom']
-                
+                P = row['Prenom']   
                 if not pd.isna(N):
                     N = N.strip()
                 if not pd.isna(P):
                     P = P.strip() 
-
                 try:
                     agent = Collaborateur.objects.get(Nom=N, Prenom=P)
-
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-
                 realise_h = row['H Realise']
                 Prime = row['Prime PROD']
                 Avance = row['Avance sur salaire']
-
                 if pd.isna(Prime):
                     Prime = 0
-
                 if pd.isna(Avance):
                     Avance = 0
-
                 agent.Nbre_d_heures_Travaillees = realise_h
                 agent.Prime_Produit = Prime
                 agent.Avance_sur_salaire = Avance
                 agent.save()
-
             messages.success(request, 'Agent data updated successfully.')
         else:
             print("No file uploaded.")
