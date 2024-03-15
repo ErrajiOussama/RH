@@ -630,7 +630,6 @@ def modify_salary_France(request):
                 salaire.save()
             except Salaire_FRANCE.DoesNotExist:
                 pass
-                
         return redirect('ModifSF')
     return redirect('ModifSF')
 

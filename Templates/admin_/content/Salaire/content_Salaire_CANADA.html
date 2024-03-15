@@ -5,7 +5,7 @@
             <div class="card-header pb-0">
               <form action="{% url 'CalculeC' %}" method="get">
                 {% csrf_token %}  
-                <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
+                <button type="submit" value="submit"  class="btn bg-gradient-primary" data-toggle="tooltip" data-original-title="Edit user">
                     Calculate
                 </button> 
               </form>
@@ -73,7 +73,7 @@
           <form action="{% url 'CSV_CANADA' %}" method="get">
           {% csrf_token %}
             <div class="container-fluid py-4">
-              <button id="downloadCsvBtn" class="btn btn-primary">Download CSV</button>
+              <button id="downloadCsvBtn" class="btn bg-gradient-primary">Download CSV</button>
             </div>
           </form>
         </div>
