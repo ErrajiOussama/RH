@@ -1,7 +1,7 @@
 from django.urls import path,include
 from . import views
 urlpatterns = [
-    #home
+  #ADMIN_URL
   path('', views.IndexView, name='home'),
   path('Login/',views.loginPageView,name='login'),
   path('register/',views.registerPageView,name="register"),
@@ -36,5 +36,6 @@ urlpatterns = [
   path('RecalculerF', views.modify_salary_France, name='RecalculerF'),
   path('ImportF', views.import_csv_and_update_agentsF, name='ImportF'),
   path('ImportC', views.import_csv_and_update_agentsC, name='ImportC'),
+  #AGENT URLS
   path('Userpage', views.userPage, name='Userpage'),
 ]
