@@ -6,6 +6,13 @@
           <div class="header_search_form_container">
             <div class="card-header pb-0">
               <div class="header_search_form_container">
+                <form role="form text-center" action="{% url 'ModifSC' %}" method="GET"> 
+                  <!--{{ myFilter.form }}-->
+                  <div class="mb-3 text-center">
+                    <input type="search" name="Nom" class="form-control  text-center ">
+                    <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn bg-gradient-primary">search</button>
+                  </div>
+                </form>
                 <form role="form text-center" action="{% url 'Recalculer' %}" method="GET"> 
                   <!--{{ myFilter.form }}-->
                   <div class="mb-3 text-center">

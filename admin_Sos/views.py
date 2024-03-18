@@ -105,19 +105,19 @@ def Adimn_view(request):
     }
     return render(request,'admin_/home_admin.html',context)
 
-
 @login_required(login_url='login')
 @admin_only
 def TableView(request):
     context = Collaborateur.objects.all()
     nom_query = request.GET.get('Nom', '')
     prenom_query = request.GET.get('Nom', '')
+    nom_query_lower = nom_query.lower() if nom_query else None
+    prenom_query_lower = prenom_query.lower() if prenom_query else None
     if nom_query or prenom_query:
-        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query) | Q(Prenom__icontains=prenom_query))
+        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query_lower) | Q(Prenom__icontains=prenom_query_lower))
     else:
         context= Collaborateur.objects.all()
     return render(request, 'admin_/tables.html', {'collaborateur': context})
-
 
 @login_required(login_url='login')
 @admin_only
@@ -137,23 +137,33 @@ def TableView_Canada(request):
 @admin_only
 def TableView_Paie_Mod_Cana(request):
     current_date = datetime.now()
-    month_year_str = current_date.strftime('%B %Y')
+    nom_query = request.GET.get('Nom', '')
+    prenom_query = request.GET.get('Nom', '')
+    nom_query_lower = nom_query.lower() if nom_query else None
+    prenom_query_lower = prenom_query.lower() if prenom_query else None
     first_day_of_month = current_date.replace(day=1)
     context = Collaborateur.objects.filter(Activite='CANADA').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
-    context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)    
-    return render(request, 'admin_/salaire_complet/Modif Salaire Canada.html', {'collaborateur': context, 'salaire': context2})
-
+    if nom_query or prenom_query:
+        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query_lower) | Q(Prenom__icontains=prenom_query_lower)).filter(Activite='CANADA').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    else:
+        context = Collaborateur.objects.filter(Activite='CANADA').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    return render(request, 'admin_/salaire_complet/Modif Salaire Canada.html', {'collaborateur': context})
 
 @login_required(login_url='login')
 @admin_only
 def TableView_Paie_Mod_Fran(request):
     current_date = datetime.now()
-    month_year_str = current_date.strftime('%B %Y')
     first_day_of_month = current_date.replace(day=1)
     context = Collaborateur.objects.filter(Activite='FRANCE').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
-    context2 = Salaire_FRANCE.objects.filter(Date_de_salaire=month_year_str)
-    return render(request, 'admin_/salaire_complet/Modif Salaire FRANCE.html', {'Collaborateur': context, 'salaire': context2})
-
+    nom_query = request.GET.get('Nom', '')
+    prenom_query = request.GET.get('Nom', '')
+    nom_query_lower = nom_query.lower() if nom_query else None
+    prenom_query_lower = prenom_query.lower() if prenom_query else None
+    if nom_query or prenom_query:
+        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query_lower) | Q(Prenom__icontains=prenom_query_lower)).filter(Activite='FRANCE').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    else:
+        context = Collaborateur.objects.filter(Activite='FRANCE').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    return render(request, 'admin_/salaire_complet/Modif Salaire FRANCE.html', {'Collaborateur': context})
 
 @login_required(login_url='login')
 @admin_only
@@ -191,7 +201,6 @@ def Form_EDS_FRANCE(request,id):
     if instance:
         return render(request,'admin_/salaire_complet/Form.html',{'collaborateur':instance,'salaire':salaire})
     return render(request,'admin_/salaire_complet/Salaries FRANCE.html')
-
 
 @login_required(login_url='login')
 @admin_only
