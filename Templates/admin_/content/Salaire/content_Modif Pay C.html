@@ -16,7 +16,7 @@
                 <form role="form text-center" action="{% url 'Recalculer' %}" method="GET"> 
                   <!--{{ myFilter.form }}-->
                   <div class="mb-3 text-center">
-                    <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn btn-primary">Recalculer</button>
+                    <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn bg-gradient-primary">Recalculer</button>
                   </div>
                 </form>
             </div>
@@ -65,7 +65,7 @@
                 <td class="align-middle">
                   <form action="{% url 'EditSC' id=C.id %}" method="get">
                     {% csrf_token %}  
-                    <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
+                    <button type="submit" value="submit"  class="btn bg-gradient-primary" data-toggle="tooltip" data-original-title="Edit user">
                         Edit
                     </button> 
                   </form>
@@ -73,7 +73,7 @@
                 <td class="align-middle">
                   <form action="{% url 'DelCa' id=C.id %}" method="get">
                     {% csrf_token %}  
-                    <button type="submit" value="submit"  class="btn btn-primary" data-toggle="tooltip" data-original-title="Edit user">
+                    <button type="submit" value="submit"  class="btn bg-gradient-primary" data-toggle="tooltip" data-original-title="Edit user">
                         Supprimer
                     </button> 
                   </form>
@@ -88,7 +88,7 @@
           {% csrf_token %}
           <div class="container-fluid py-4">
               <input type="file" name="excel_file" id="excelFileInput" style="display: none;">
-              <label for="excelFileInput" class="btn btn-primary">Import Excel</label>
+              <label for="excelFileInput" class="btn bg-gradient-primary">Import Excel</label>
               <button type="submit" id="importExcelBtn" style="display: none;">Submit</button>
           </div>
         </form>
