@@ -73,7 +73,7 @@ def Adimn_view(request):
     current_date = datetime.now().date()
     collaborateur_inactif=Collaborateur.objects.filter(Statut='INACTIF').count()
     collaborateur_actif=Collaborateur.objects.filter(Statut='ACTIF').count()
-    collaborateur_man=Collaborateur.objects.filter(Sexe='H').count()
+    collaborateur_man=Collaborateur.objects.filter(Sexe='H',Statut='ACTIF').count()
     collaborateur_Women=Collaborateur.objects.filter(Sexe='F',Statut='ACTIF').count()
     collaborateur_france=Collaborateur.objects.filter(Activite='FRANCE',Statut='ACTIF').count()
     collaborateur_canada=Collaborateur.objects.filter(Activite='CANADA',Statut='ACTIF').count()
