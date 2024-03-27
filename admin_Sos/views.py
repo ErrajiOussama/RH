@@ -565,7 +565,7 @@ def modify_salary_CANADA(request):
             except Salaire_CANADA.DoesNotExist:
                 pass
                 
-        return redirect('ModifSC')
+        return redirect('tableC')
     
     return redirect('ModifSC')
 
@@ -580,15 +580,15 @@ def modify_salary_France(request):
         for c in collaborateurs:
             try:
                 salaire = salaires.get(id_Collaborateur=c.id)
-                salaire_f = c.S_H * c.Nbre_d_heures_Travaillees + c.Prime_Produit - c.Avance_sur_salaire
-                salaire.salaire_finale = salaire_f
+                salaire_f = round(c.S_H * c.Nbre_d_heures_Travaillees + c.Prime_Produit - c.Avance_sur_salaire,2)
+                salaire.salaire_finale = round(salaire_f,2)
                 salaire.Prime_Produit=c.Prime_Produit
                 salaire.Avance_sur_salaire=c.Avance_sur_salaire
                 salaire.Nbre_d_heures_Travaillees=c.Nbre_d_heures_Travaillees
                 salaire.save()
             except Salaire_FRANCE.DoesNotExist:
                 pass
-        return redirect('ModifSF')
+        return redirect('tableF')
     return redirect('ModifSF')
 
 def import_csv_and_update_agentsF(request):
@@ -598,25 +598,25 @@ def import_csv_and_update_agentsF(request):
             print("File uploaded successfully:", excel_file.name)
             df = pd.read_excel(excel_file, engine='openpyxl')
             print("Excel file read successfully.")
-            for index, row in df.iterrows():      
+            for index, row in df.iterrows():    
                 N = row['Nom']
-                P = row['Prenom']   
+                P = row['Prénom']   
                 if not pd.isna(N):
                     N = N.strip()
                 if not pd.isna(P):
-                    P = P.strip() 
+                    P = P.strip()
                 try:
                     agent = Collaborateur.objects.get(Nom=N, Prenom=P)
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-                realise_h = row['Total H']
+                realise_h = row['H Réalisé']
                 Prime=row['Prime PROD']
                 Avance=row['Avance sur salaire']    
                 if pd.isna(Prime):
                     Prime = 0
                 if pd.isna(Avance):
-                    Avance = 0  
+                    Avance = 0
                 agent.Nbre_d_heures_Travaillees = realise_h
                 agent.Prime_Produit=Prime
                 agent.Avance_sur_salaire=Avance
@@ -634,7 +634,7 @@ def import_csv_and_update_agentsC(request):
             df = pd.read_excel(excel_file, engine='openpyxl')
             for index, row in df.iterrows():    
                 N = row['Nom']
-                P = row['Prenom']   
+                P = row['Prénom']   
                 if not pd.isna(N):
                     N = N.strip()
                 if not pd.isna(P):
@@ -644,7 +644,7 @@ def import_csv_and_update_agentsC(request):
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-                realise_h = row['H Realise']
+                realise_h = row['H Réalisé']
                 Prime = row['Prime PROD']
                 Avance = row['Avance sur salaire']
                 if pd.isna(Prime):
