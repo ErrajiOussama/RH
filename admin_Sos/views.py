@@ -555,8 +555,7 @@ def modify_salary_CANADA(request):
         salaires = Salaire_CANADA.objects.filter(Date_de_salaire=month_year_str)
         for c in collaborateurs:
             try:
-                salaire = salaires.get(id_Collaborateur=c.id)
-                print(c.S_H,c.Avance_sur_salaire,c.Prime_Produit,c.Nbre_d_heures_Travaillees)
+                salaire = salaires.get(id_Collaborateur=c.id)             
                 salaire_f = c.S_H * c.Nbre_d_heures_Travaillees + c.Prime_Produit - c.Avance_sur_salaire
                 salaire.salaire_finale = round(salaire_f,2)
                 salaire.Prime_Produit=c.Prime_Produit
@@ -581,7 +580,6 @@ def modify_salary_France(request):
         for c in collaborateurs:
             try:
                 salaire = salaires.get(id_Collaborateur=c.id)
-                print(c.S_H,c.Avance_sur_salaire,c.Prime_Produit,c.Nbre_d_heures_Travaillees)
                 salaire_f = round(c.S_H * c.Nbre_d_heures_Travaillees + c.Prime_Produit - c.Avance_sur_salaire,2)
                 print(salaire_f)
                 salaire.salaire_finale = salaire_f
