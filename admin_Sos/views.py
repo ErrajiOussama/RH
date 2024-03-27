@@ -326,7 +326,7 @@ def Salaries_agent_CANADA(request):
                 th = collaborateur.Salaire_base / th_f
                 collaborateur.Planifier=th_f
                 salary = round((collaborateur.Nbre_d_heures_Travaillees * th) + collaborateur.Prime_Produit - collaborateur.Avance_sur_salaire,2)
-                collaborateur.S_H = round(th,2)
+                collaborateur.S_H = round(th,3)
                 collaborateur.save()
             # Create a new instance of the Salaire model
                 salaire = Salaire_CANADA.objects.create(
@@ -336,7 +336,7 @@ def Salaries_agent_CANADA(request):
                     Prime_Produit=collaborateur.Prime_Produit,
                     Nbre_d_heures_Travaillees = collaborateur.Nbre_d_heures_Travaillees,
                     Avance_sur_salaire= collaborateur.Avance_sur_salaire,
-                    S_H =round(th,2),
+                    S_H =round(th,3),
                     Planifier =  th_f,
                 )
                 salaries.append(salaire)
@@ -368,7 +368,7 @@ def Salaries_agent_FRANCE(request):
                 th = collaborateur.Salaire_base / th_f
                 collaborateur.Planifier = th_f
                 salary = round((collaborateur.Nbre_d_heures_Travaillees * th) + collaborateur.Prime_Produit - collaborateur.Avance_sur_salaire, 2)
-                collaborateur.S_H = round(th, 2)
+                collaborateur.S_H = round(th, 3)
                 collaborateur.save()
                 salaire = Salaire_FRANCE.objects.create(
                     id_Collaborateur=collaborateur,
@@ -377,7 +377,7 @@ def Salaries_agent_FRANCE(request):
                     Prime_Produit=collaborateur.Prime_Produit,
                     Nbre_d_heures_Travaillees=collaborateur.Nbre_d_heures_Travaillees,
                     Avance_sur_salaire=collaborateur.Avance_sur_salaire,
-                    S_H=round(th, 2),
+                    S_H=round(th, 3),
                     Planifier=th_f,
                 )
                 salaries.append(salaire)
@@ -556,8 +556,9 @@ def modify_salary_CANADA(request):
         for c in collaborateurs:
             try:
                 salaire = salaires.get(id_Collaborateur=c.id)
+                print(c.S_H,c.Avance_sur_salaire,c.Prime_Produit,c.Nbre_d_heures_Travaillees)
                 salaire_f = c.S_H * c.Nbre_d_heures_Travaillees + c.Prime_Produit - c.Avance_sur_salaire
-                salaire.salaire_finale = salaire_f
+                salaire.salaire_finale = round(salaire_f,2)
                 salaire.Prime_Produit=c.Prime_Produit
                 salaire.Avance_sur_salaire=c.Avance_sur_salaire
                 salaire.Nbre_d_heures_Travaillees=c.Nbre_d_heures_Travaillees
@@ -580,8 +581,10 @@ def modify_salary_France(request):
         for c in collaborateurs:
             try:
                 salaire = salaires.get(id_Collaborateur=c.id)
+                print(c.S_H,c.Avance_sur_salaire,c.Prime_Produit,c.Nbre_d_heures_Travaillees)
                 salaire_f = round(c.S_H * c.Nbre_d_heures_Travaillees + c.Prime_Produit - c.Avance_sur_salaire,2)
-                salaire.salaire_finale = round(salaire_f,2)
+                print(salaire_f)
+                salaire.salaire_finale = salaire_f
                 salaire.Prime_Produit=c.Prime_Produit
                 salaire.Avance_sur_salaire=c.Avance_sur_salaire
                 salaire.Nbre_d_heures_Travaillees=c.Nbre_d_heures_Travaillees
