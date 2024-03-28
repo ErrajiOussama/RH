@@ -30,6 +30,7 @@ urlpatterns = [
   path('Salaire Agent France/',views.Salaries_agent_FRANCE ,name="CalculeF"),
   path('Salaire Admin/',views.Salaries_admin ,name="salaire_admin"),
   path('generate_pdf/<int:id>', views.generate_pdf_CANADA, name='generate_pdf_Canada'),
+  path('generate_pdf_france/<int:id>', views.generate_pdf_FRANCE, name='generate_pdf_France'),
   path('CSV', views.export_to_csv_Canada, name='CSV_CANADA'),
   path('CSV', views.export_to_csv_France, name='CSV_FRANCE'),
   path('Recalculer', views.modify_salary_CANADA, name='Recalculer'),

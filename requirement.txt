@@ -8,3 +8,4 @@ pip install django-filter
 pip install xhtml2pdf  
 pip3 install jinja2     
 pip3 install pdfkit   
+pip install -U channels["daphne"]

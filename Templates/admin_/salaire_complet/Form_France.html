@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form </title>
+<style>
+    .top-right {
+        position: fixed;
+        top: 20px; /* Adjust as needed */
+        right: 20px; /* Adjust as needed */
+        background-color: #fff; /* Optional: Add a background color */
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        z-index: 999; /* Ensure it's above other content */
+      }
+    @page {
+        size: a4 portrait;
+        @frame header_frame {           /* Static Frame */
+            -pdf-frame-content: header_content;
+            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+        }
+        @frame content_frame {          /* Content Frame */
+            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+        }
+        @frame footer_frame {           /* Another static Frame */
+            -pdf-frame-content: footer_content;
+            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+        }
+    }
+</style>
+</head>
+<body >
+        <div style="margin:100px 90px 100px 600px;display:flex; justify-content:space-between;">
+            <div>
+                Mois : {{salaire.Date_de_salaire}}
+            </div>    
+        </div>
+
+    <div style="margin: auto; width:600px">
+        <div style="margin:30px"></div>
+
+    <table border="1" style="width:100%; border-collapse: collapse;">
+        <th colspan="2">Entretien EDS</th>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nom et prenom</td>
+            <td style="text-align : center">{{collaborateur.Nom}} {{collaborateur.Prenom}}</td>
+        </tr>
+        <tr colspan="2"style="">
+            <td style="width:40%;height:60px;">Date d'entretien</td>
+            <td style="text-align : center">27/02/2024</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Activite</td>
+            <td style="text-align : center">{{ collaborateur.Activite }}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Manager</td>
+            <td style="text-align : center"></td>
+        </tr>
+    </table>
+
+    <div style="margin:30px"></div>
+
+    <table border="1" style="width:100%; border-collapse: collapse;">
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Salaire de base</td>
+            <td style="text-align : center">{{collaborateur.Salaire_base}}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nbre de retards/absences</td>
+            <td style="text-align : center"></td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nombre d'heures planifiées</td>
+            <td style="text-align : center">{{ collaborateur.Planifier }}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Nombre d'heures travaillées</td>
+            <td style="text-align : center">{{ collaborateur.Nbre_d_heures_Travaillees }}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Base journalière
+            </td>
+            <td style="text-align : center">{{ collaborateur.S_H }}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Prime de productivité
+            </td>
+            <td style="text-align : center">{{ collaborateur.Prime_Produit }}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Avance sur salaire
+            </td>
+            <td style="text-align : center">{{ collaborateur.Avance_sur_salaire }}</td>
+        </tr>
+        <tr colspan="2">
+            <td style="width:40%;height:60px;">Salaire à payer
+            </td>
+            <td style="text-align : center">{{ salaire.salaire_finale }}</td>
+        </tr>
+    </table>
+
+    <div style="margin:30px"></div>
+
+    <table border="1" style=" width:100%;height:60px; border-collapse: collapse;">
+        <tr>
+            <th>
+                Signature Manager
+            </th>
+            <th>
+                Signature Collaborateur
+            </th>
+            
+        </tr>
+        <tr style=" height: 70px;">
+            <td>              
+            </td>
+            <th>
+            </th>
+        </tr>
+        <tr >
+            <th colspan="2">
+                COMMENTAIRE	
+            </th>
+        </tr>
+        <tr style=" height: 70px;">
+            <td colspan ="2">
+            </td>
+        </tr>
+    </table>
+    
+    <form action="{% url 'generate_pdf_France' id=collaborateur.id  %}" method="get">
+        {% csrf_token %}  
+        <button style="font-size: 20px; /* Adjust the font size as needed */
+        padding: 20px 50px; /* Adjust the padding as needed */
+        background-color: transparent;
+        border: none;
+        cursor: pointer;" type="submit" value="submit">
+        </button> 
+      </form>
+    <div style="margin:30px"></div>
+    </div>
+    <div>
+    
+
+</body>
+</html>

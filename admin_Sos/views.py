@@ -190,7 +190,7 @@ def Form_EDS_CANADA(request,id):
     instance= Collaborateur.objects.get(id=id)
     salaire=Salaire_CANADA.objects.get(id_Collaborateur=id)
     if instance:
-        return render(request,'admin_/salaire_complet/Form.html',{'collaborateur':instance,'salaire':salaire})
+        return render(request,'admin_/salaire_complet/Form_Canada.html',{'collaborateur':instance,'salaire':salaire})
     return render(request,'admin_/salaire_complet/Salaries CANADA.html')
 
 @login_required(login_url='login')
@@ -199,7 +199,7 @@ def Form_EDS_FRANCE(request,id):
     instance= Collaborateur.objects.get(id=id)
     salaire=Salaire_FRANCE.objects.get(id_Collaborateur=id)
     if instance:
-        return render(request,'admin_/salaire_complet/Form.html',{'collaborateur':instance,'salaire':salaire})
+        return render(request,'admin_/salaire_complet/Form_France.html',{'collaborateur':instance,'salaire':salaire})
     return render(request,'admin_/salaire_complet/Salaries FRANCE.html')
 
 @login_required(login_url='login')
@@ -427,7 +427,25 @@ def generate_pdf_CANADA(request,id):
     salaire = Salaire_CANADA.objects.get(id_Collaborateur=id)
     context = {'collaborateur': collaborateur,'salaire':salaire}
     # Render Jinja2 template
-    template = get_template('admin_/salaire_complet/Form.html')
+    template = get_template('admin_/salaire_complet/Form_Canada.html')
+    html = template.render(context)
+    # Configure pdfkit
+    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    # Convert HTML to PDF
+    pdf_content = pdfkit.from_string(html, False, configuration=config)
+    # Create an HttpResponse with PDF content
+    response = HttpResponse(pdf_content, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="output.pdf"'
+    return response
+
+@admin_only
+def generate_pdf_FRANCE(request,id):
+    
+    collaborateur = get_object_or_404(Collaborateur, id=id)
+    salaire = Salaire_FRANCE.objects.get(id_Collaborateur=id)
+    context = {'collaborateur': collaborateur,'salaire':salaire}
+    # Render Jinja2 template
+    template = get_template('admin_/salaire_complet/Form_France.html')
     html = template.render(context)
     # Configure pdfkit
     config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
@@ -611,7 +629,7 @@ def import_csv_and_update_agentsF(request):
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-                realise_h = row['H Réalisé']
+                realise_h = row['Réalisé H']
                 Prime=row['Prime PROD']
                 Avance=row['Avance sur salaire']    
                 if pd.isna(Prime):
@@ -645,7 +663,7 @@ def import_csv_and_update_agentsC(request):
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-                realise_h = row['H Réalisé']
+                realise_h = row['Réalisé H']
                 Prime = row['Prime PROD']
                 Avance = row['Avance sur salaire']
                 if pd.isna(Prime):
