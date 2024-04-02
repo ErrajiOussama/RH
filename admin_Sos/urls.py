@@ -1,4 +1,4 @@
-from django.urls import path,include
+from django.urls import path
 from . import views
 urlpatterns = [
   #ADMIN_URL
@@ -8,6 +8,7 @@ urlpatterns = [
   path('logout/',views.logoutview,name='logout'),
   path('home_admin/',views.Adimn_view,name='home_admin'),
   path('table/',views.TableView ,name="table"),
+  path('tableEV/',views.TableViewEv ,name="tableEV"),
   path('table France/',views.TableView_France ,name="tableF"),
   path('table Canada/',views.TableView_Canada ,name="tableC"),
   path('Virement/',views.VirementView ,name="virement"),
@@ -15,10 +16,13 @@ urlpatterns = [
   path('rapport Agent France/',views.Report_salaire_agent_france ,name="rapport Agent France"),
   path('rapport Admin/',views.Report_salaire_admin ,name="rapport Admin"),
   path('AddC/',views.AddCView,name="AddC"),
-  path('EDS CANADA/<int:id>',views.Form_EDS_CANADA ,name="EDSCanada"), 
+  path('AddEV/',views.AddEView,name="AddEV"),
+  path('EDS CANADA/<int:id>',views.Form_EDS_CANADA ,name="EDSCanada"),
   path('EDS FRANCE/<int:id>',views.Form_EDS_FRANCE ,name="EDSFrance"), 
   path('EditC/<int:id>',views.EditCView,name="EditC"),
+  path('EditE/<int:id>',views.EditEView,name="EditEV"),
   path('DelC/<int:id>',views.DelCView,name="DelC"),
+   path('DelEV/<int:id>',views.DelEView,name="DelEV"),
   path('EditS/<int:id>',views.EditS_Canada_View,name="EditSC"),
   path('EditS/<int:id>',views.EditS_France_View,name="EditSF"),
   path('DelCa/<int:id>',views.DelSView_CA,name="DelCa"),

@@ -4,16 +4,16 @@
       <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img class="w-100" src="{%static 'Site de Societe/img/1.png' %}" alt="Image" />
+            <img class="w-100" src="{{Ev.image.url}}" alt="Image"/>
             <div class="carousel-caption">
               <div class="container">
                 <div class="row">
                   <div class="col-12 col-lg-6">
                     <h1 class="display-3 text-dark mb-4 animated slideInDown">
-                      *****
+                      {{Ev.Name}}
                     </h1>
-                    <p class="fs-5 text-body mb-5">
-                      ****************
+                    <p class="fs-5 text-body mb-5"> 
+                      {{Ev.Description}}
                     </p>
                     <a href="" class="btn btn-primary py-3 px-5"
                       >*************</a

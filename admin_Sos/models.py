@@ -173,3 +173,14 @@ class Salaire_admin(models.Model):
     salaire_finale = models.FloatField(default=0,null=True,blank=True)
     Nombre_de_Jour_Travaille_Admin = models.FloatField(default=0,null=True,blank=True)
     Avance_sur_salaire = models.FloatField(default=0,null=True,blank=True)
+
+class Event(models.Model):
+    Statut= (
+        ('ELEVE','ELEVE'),
+        ('MOYENE','MOYENE'),
+        ('FAIBLE','FAIBLE'),
+    )
+    Name=models.CharField(null=True, blank=True,max_length=100)
+    Description=models.CharField(null=True, blank=True,max_length=1000)
+    priorite=models.CharField(null=True, blank=True,max_length=100,choices=Statut)
+    image=models.ImageField(null=True, blank=True)

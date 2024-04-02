@@ -23,7 +23,11 @@ from django.contrib import messages
 
 @login_required(login_url='login')
 def IndexView(request):
-    return render(request,'Agent/index.html')
+    Ev=Event.objects.get(id=1)
+    context={
+        'Ev':Ev,
+    }
+    return render(request,'Agent/index.html',context)
 
 
 def loginPageView(request):
@@ -118,6 +122,11 @@ def TableView(request):
     else:
         context= Collaborateur.objects.all()
     return render(request, 'admin_/tables.html', {'collaborateur': context})
+@login_required(login_url='login')
+@admin_only
+def TableViewEv(request):
+    context = Event.objects.all()
+    return render(request, 'admin_/tables event.html', {'Event': context})
 
 @login_required(login_url='login')
 @admin_only
@@ -184,6 +193,19 @@ def AddCView(request):
         form = Collaborateurform()
     return render(request,'admin_/addC.html',{'form':form})
 
+
+@login_required(login_url='login')
+@admin_only
+def AddEView(request):
+    if request.method == "POST":
+        form = EventForm(data=request.POST,files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('tableEV')
+    if request.method == "GET":
+        form = EventForm()
+    return render(request,'admin_/addEV.html',{'form':form})
+
 @login_required(login_url='login')
 @admin_only
 def Form_EDS_CANADA(request,id):
@@ -214,6 +236,19 @@ def EditCView(request,id):
     if request.method == "GET":
         form = Collaborateurform(instance=instance)
     return render(request,'admin_/EditC.html',{'form':form,'collaborateur':instance})
+
+@login_required(login_url='login')
+@admin_only
+def EditEView(request,id):
+    instance= Event.objects.get(id=id)
+    if request.method == "POST":
+        form = EventForm(data=request.POST,files=request.FILES,instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect('tableEV')
+    if request.method == "GET":
+        form = EventForm(instance=instance)
+    return render(request,'admin_/EditE.html',{'form':form,'Event':instance})
 
 @login_required(login_url='login')
 @admin_only
@@ -265,6 +300,18 @@ def DelCView(request,id):
             'Collaborateur':dele,
         }
     return render(request,'admin_/delet.html',context)
+
+@login_required(login_url='login')
+@admin_only
+def DelEView(request,id):
+    dele=Event.objects.get(id=id)
+    if request.method == "POST":
+        dele.delete()
+        return redirect('table')
+    context={
+            'Event':dele,
+        }
+    return render(request,'admin_/deletEV.html',context)
 
 @login_required(login_url='login')
 @admin_only

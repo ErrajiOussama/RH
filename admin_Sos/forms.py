@@ -32,3 +32,7 @@ class registerForm(UserCreationForm):
         model = User
         fields = ['username','password1','password2','id']
 
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = '__all__'
