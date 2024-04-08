@@ -6,7 +6,7 @@ from django.utils.timezone import make_aware
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import *
-from datetime import datetime
+from datetime import datetime, timezone
 from .decorators import *
 from datetime import datetime
 from django.db.models import Q
@@ -23,9 +23,10 @@ from django.contrib import messages
 
 @login_required(login_url='login')
 def IndexView(request):
-    Ev=Event.objects.get(id=1)
-    context={
-        'Ev':Ev,
+    current_date = timezone.now().date()
+    valid_events = Event.objects.filter(Date_debut__lte=current_date, Date_fin__gte=current_date)
+    context = {
+        'events': valid_events,
     }
     return render(request,'Agent/index.html',context)
 

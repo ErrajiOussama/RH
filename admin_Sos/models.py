@@ -184,3 +184,5 @@ class Event(models.Model):
     Description=models.CharField(null=True, blank=True,max_length=1000)
     priorite=models.CharField(null=True, blank=True,max_length=100,choices=Statut)
     image=models.ImageField(null=True, blank=True)
+    Date_debut = models.DateField(null=True,blank=True)
+    Date_fin = models.DateField(null=True,blank=True)
