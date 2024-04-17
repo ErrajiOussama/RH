@@ -21,15 +21,33 @@ import pandas as pd
 from django.shortcuts import render
 from django.contrib import messages
 
-@login_required(login_url='login')
 def IndexView(request):
-    current_date = timezone.now().date()
-    valid_events = Event.objects.filter(Date_debut__lte=current_date, Date_fin__gte=current_date)
-    context = {
-        'events': valid_events,
-    }
-    return render(request,'Agent/index.html',context)
+    current_date = datetime.now().date()
+    events = Event.objects.filter(Date_debut__lte=current_date, Date_fin__gte=current_date)
+    print(events.count())
 
+    # Separate events based on priority
+    events_eleve = []
+    events_moyen = []
+    events_faible = []
+
+    for event in events:
+        if event.priorite == "ELEVE":
+            events_eleve.append(event)
+        elif event.priorite == "MOYENE":
+            events_moyen.append(event)
+        elif event.priorite == "FAIBLE":
+            events_faible.append(event)
+
+    events_selected = []
+    events_selected.extend(events_eleve[:4])
+    events_selected.extend(events_moyen[:4 - len(events_selected)])
+    events_selected.extend(events_faible[:4 - len(events_selected)])
+
+    context = {
+        'events': events_selected,
+    }
+    return render(request, 'Agent/index.html', context)
 
 def loginPageView(request):
     if request.method == 'POST':
@@ -97,7 +115,6 @@ def Adimn_view(request):
     )
     total_agents_this_month = all_agents_this_month.count()
     turnover_percentage = round((inactive_agents_this_month / total_agents_this_month) * 100, 2)
-
     context={
         'collaborateur_Actif':collaborateur_actif,
         'collaborateur_Inactif':collaborateur_inactif,
@@ -123,6 +140,7 @@ def TableView(request):
     else:
         context= Collaborateur.objects.all()
     return render(request, 'admin_/tables.html', {'collaborateur': context})
+
 @login_required(login_url='login')
 @admin_only
 def TableViewEv(request):
@@ -132,6 +150,8 @@ def TableViewEv(request):
 @login_required(login_url='login')
 @admin_only
 def TableView_Canada(request):
+    current_date = datetime.now().date()
+    month_year_str = current_date.strftime('%B %Y')
     context = Collaborateur.objects.filter(Activite='CANADA')
     nom_query = request.GET.get('Nom', '')
     prenom_query = request.GET.get('Nom', '')
@@ -139,7 +159,7 @@ def TableView_Canada(request):
         context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query) | Q(Prenom__icontains=prenom_query))
     else:
         context= Collaborateur.objects.filter(Activite='CANADA')
-    context2 = Salaire_CANADA.objects.all()
+    context2 = Salaire_CANADA.objects.filter(Date_de_salaire__contains=month_year_str)
 
     return render(request, 'admin_/salaire_complet/Salaries CANADA.html', {'collaborateur': context,'salaire':context2})
 
@@ -163,6 +183,7 @@ def TableView_Paie_Mod_Cana(request):
 @admin_only
 def TableView_Paie_Mod_Fran(request):
     current_date = datetime.now()
+    print(current_date)
     first_day_of_month = current_date.replace(day=1)
     context = Collaborateur.objects.filter(Activite='FRANCE').filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
     nom_query = request.GET.get('Nom', '')
@@ -193,7 +214,6 @@ def AddCView(request):
     if request.method == "GET":
         form = Collaborateurform()
     return render(request,'admin_/addC.html',{'form':form})
-
 
 @login_required(login_url='login')
 @admin_only
@@ -438,7 +458,6 @@ def Salaries_agent_FRANCE(request):
         return render(request, 'admin_/salaire_complet/Salaries FRANCE.html', context)
     return render(request, 'admin_/salaire_complet/Salaries CalculeF.html')
 
-
 @admin_only
 def Salaries_admin(request):
     collaborateurs = Collaborateur.objects.filter(Q(CSP='CADRE') | Q(CSP='TECHNICIEN'))
@@ -470,7 +489,6 @@ def Salaries_admin(request):
 
 @admin_only
 def generate_pdf_CANADA(request,id):
-    
     collaborateur = get_object_or_404(Collaborateur, id=id)
     salaire = Salaire_CANADA.objects.get(id_Collaborateur=id)
     context = {'collaborateur': collaborateur,'salaire':salaire}
@@ -488,7 +506,6 @@ def generate_pdf_CANADA(request,id):
 
 @admin_only
 def generate_pdf_FRANCE(request,id):
-    
     collaborateur = get_object_or_404(Collaborateur, id=id)
     salaire = Salaire_FRANCE.objects.get(id_Collaborateur=id)
     context = {'collaborateur': collaborateur,'salaire':salaire}
@@ -543,7 +560,6 @@ def Report_salaire_agent_france(request):
     else:
         context2 = Salaire_FRANCE.objects.all()
     return render(request, 'admin_/salaire_complet/rapport Agent_FRANCE.html', {'salaire': context2})
-
 
 @admin_only
 def Report_salaire_admin(request):
@@ -733,3 +749,7 @@ def userPage(request):
     collaborateur = Collaborateur.objects.get(user=request.user)
     context = {'collaborateur':collaborateur}
     return render(request, 'Agent/compte.html', context)
+
+@login_required(login_url='login')
+def Tiquet(request):
+    return render(request, 'Agent/Tiquet.html')

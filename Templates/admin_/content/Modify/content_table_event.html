@@ -6,15 +6,6 @@
               <h6>Evenement<br>
               <a href="{% url 'AddEV' %}" class="fa fa-plus text-secondary mb-3"></a>
               </h6>
-              <div class="header_search_form_container">
-                <form role="form text-center" action="{% url 'tableEV' %}" method="GET"> 
-                  <!--{{ myFilter.form }}-->
-                  <div class="mb-3 text-center">
-                    <input type="search" name="Nom" class="form-control  text-center ">
-                    <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn bg-gradient-primary">search</button>
-                  </div>
-                </form>
-            </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0" style="height: 350px; overflow-y: auto;">

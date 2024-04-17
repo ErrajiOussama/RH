@@ -186,3 +186,7 @@ class Event(models.Model):
     image=models.ImageField(null=True, blank=True)
     Date_debut = models.DateField(null=True,blank=True)
     Date_fin = models.DateField(null=True,blank=True)
+
+class Ticket(models.Model):
+    id_Collaborateur=models.ForeignKey(Collaborateur,on_delete=models.CASCADE)
+    

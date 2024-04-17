@@ -4,6 +4,7 @@ urlpatterns = [
   #ADMIN_URL
   path('', views.IndexView, name='home'),
   path('Login/',views.loginPageView,name='login'),
+  path('Tiquet/',views.Tiquet,name='Tiquet'),
   path('register/',views.registerPageView,name="register"),
   path('logout/',views.logoutview,name='logout'),
   path('home_admin/',views.Adimn_view,name='home_admin'),
