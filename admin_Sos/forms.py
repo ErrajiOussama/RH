@@ -19,7 +19,7 @@ class SalaireForm(forms.ModelForm):
 
 
 class registerForm(UserCreationForm):
-    id = forms.IntegerField(label='Collaborator ID', required=False)    
+    Nom = forms.IntegerField(label='Nom', required=False)    
     
     def clean(self):
         username = self.cleaned_data.get('username')

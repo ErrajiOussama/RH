@@ -113,9 +113,14 @@
                   </select>
                 </div>
                 <div class="mb-3 text-center">
-                  <label for="id">Collaborator ID:</label>
-                  <input type="number" name="id" id="id" class="form-control">
-                </div>
+                  <label for="name">Nom du Collaborateur</label>
+                  <select class="form-select" name="name" id="name">
+                      <option selected>Collaborateur ....</option>
+                      {% for collaborator in collaborators %}
+                      <option value="{{ collaborator.Nom }}">{{ collaborator.Nom }} {{ collaborator.Prenom }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
                 
                 <div class="text-center">
                   {% if messages %}

@@ -67,16 +67,20 @@ def loginPageView(request):
     return render(request, 'Agent/login.html', {'form': form})
 
 @admin_only
-def registerPageView(request):    
+def registerPageView(request):  
+    collaborators = Collaborateur.objects.all()  # Fetch all collaborators
     if request.POST:
         formRegister = registerForm(request.POST)
         if request.POST.get("sign-up"):
-            group=request.POST['group']
+            group = request.POST['group']
+            name = request.POST['name']  # Retrieve selected collaborator's name
+            print(name)
             if formRegister.is_valid():
-                id = formRegister.cleaned_data.get('id')
-                if id:
+                # Assuming 'name' is the field for collaborator's name in the form
+                formRegister.cleaned_data['name'] = name  # Set the selected name in form data
+                if name:
                     try:
-                        collaborateur = Collaborateur.objects.get(id=id)
+                        collaborateur = Collaborateur.objects.get(Nom=name)  # Retrieve collaborator by name
                         user = formRegister.save()
                         user.groups.add(Group.objects.get(name=group))
                         collaborateur.user = user
@@ -84,11 +88,11 @@ def registerPageView(request):
                         messages.info(request, 'Votre compte a été créé avec succès. Veuillez vous connecter.')
                         return redirect('home_admin')
                     except Collaborateur.DoesNotExist:
-                        messages.error(request, 'Collaborateur ID invalide.')   
+                        messages.error(request, 'Nom de collaborateur invalide.')   
     else:
         formRegister = registerForm()
-    context = {'formRegister' : formRegister}
-    return render(request, 'admin_/register.html', context )
+    context = {'formRegister': formRegister, 'collaborators': collaborators}
+    return render(request, 'admin_/register.html', context)
 
 @login_required(login_url='login')
 @admin_only
