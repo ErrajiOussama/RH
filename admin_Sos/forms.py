@@ -15,7 +15,12 @@ class Collaborateurform(forms.ModelForm):
 class SalaireForm(forms.ModelForm):
     class Meta:
         model=Collaborateur
-        fields=['Nbre_d_heures_Travaillees','Avance_sur_salaire','Prime_Produit']      
+        fields=['Nbre_d_heures_Travaillees','Avance_sur_salaire','Prime_Produit']    
+
+class SalaireFormA(forms.ModelForm):
+    class Meta:
+        model=Collaborateur
+        fields=['Nombre_de_Jour_Travaille_Admin','Avance_sur_salaire']     
 
 
 class registerForm(UserCreationForm):

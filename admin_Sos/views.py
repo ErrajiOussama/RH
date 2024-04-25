@@ -169,6 +169,23 @@ def TableView_Canada(request):
 
 @login_required(login_url='login')
 @admin_only
+def TableView_Paie_Mod_Admin(request):
+    current_date = datetime.now()
+    nom_query = request.GET.get('Nom', '')
+    prenom_query = request.GET.get('Nom', '')
+    nom_query_lower = nom_query.lower() if nom_query else None
+    prenom_query_lower = prenom_query.lower() if prenom_query else None
+    first_day_of_month = current_date.replace(day=1)
+    context = Collaborateur.objects.filter(Q(CSP='CADRE') | Q(CSP='TECHNICIEN')).filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    if nom_query or prenom_query:
+        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query_lower) | Q(Prenom__icontains=prenom_query_lower)).filter(Q(CSP='CADRE') | Q(CSP='TECHNICIEN')).filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    else:
+        context = Collaborateur.objects.filter(Q(CSP='CADRE') | Q(CSP='TECHNICIEN')).filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
+    return render(request, 'admin_/salaire_complet/Modif Salaire Admin.html', {'collaborateur': context})
+
+
+@login_required(login_url='login')
+@admin_only
 def TableView_Paie_Mod_Cana(request):
     current_date = datetime.now()
     nom_query = request.GET.get('Nom', '')
@@ -277,13 +294,26 @@ def EditEView(request,id):
 
 @login_required(login_url='login')
 @admin_only
+def EditS_Admin_View(request,id):
+    instance= Collaborateur.objects.get(id=id)
+    if request.method == "POST":
+        form = SalaireFormA(data=request.POST,files=request.FILES,instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect('ModifSA')
+    if request.method == "GET":
+        form = SalaireFormA(instance=instance)
+    return render(request,'admin_/EditS.html',{'form':form,'collaborateur':instance})
+
+@login_required(login_url='login')
+@admin_only
 def EditS_Canada_View(request,id):
     instance= Collaborateur.objects.get(id=id)
     if request.method == "POST":
         form = SalaireForm(data=request.POST,files=request.FILES,instance=instance)
         if form.is_valid():
             form.save()
-            return redirect('ModifSC')
+            return redirect('ModifS')
     if request.method == "GET":
         form = SalaireForm(instance=instance)
     return render(request,'admin_/EditS.html',{'form':form,'collaborateur':instance})
@@ -301,18 +331,6 @@ def EditS_France_View(request,id):
         form = SalaireForm(instance=instance)
     return render(request,'admin_/EditSF.html',{'form':form,'collaborateur':instance})
 
-@login_required(login_url='login')
-@admin_only
-def EditS_Canada_View(request,id):
-    instance= Collaborateur.objects.get(id=id)
-    if request.method == "POST":
-        form = SalaireForm(data=request.POST,files=request.FILES,instance=instance)
-        if form.is_valid():
-            form.save()
-            return redirect('ModifSC')
-    if request.method == "GET":
-        form = SalaireForm(instance=instance)
-    return render(request,'admin_/EditS.html',{'form':form,'collaborateur':instance})
 
 @login_required(login_url='login')
 @admin_only
@@ -697,7 +715,7 @@ def import_csv_and_update_agentsF(request):
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-                realise_h = row['Réalisé H']
+                realise_h = row['H Réalisé']
                 Prime=row['Prime PROD']
                 Avance=row['Avance sur salaire']    
                 if pd.isna(Prime):
@@ -731,7 +749,7 @@ def import_csv_and_update_agentsC(request):
                 except Collaborateur.DoesNotExist:
                     messages.warning(request, f'Agent with nom {N} and prenom {P} not found.')
                     continue
-                realise_h = row['Réalisé H']
+                realise_h = row['H Réalisé']
                 Prime = row['Prime PROD']
                 Avance = row['Avance sur salaire']
                 if pd.isna(Prime):

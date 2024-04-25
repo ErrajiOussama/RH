@@ -1,0 +1,68 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <div class="header_search_form_container">
+            <div class="card-header pb-0">
+              <div class="header_search_form_container">
+                <form role="form text-center" action="{% url 'ModifSA' %}" method="GET"> 
+                  <!--{{ myFilter.form }}-->
+                  <div class="mb-3 text-center">
+                    <input type="search" name="Nom" class="form-control  text-center ">
+                    <button type="submit" style = 'margin-top : 10px' value="Submit" class="btn bg-gradient-primary">search</button>
+                  </div>
+                </form>
+                
+            </div>
+        </div>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0" style="height: 350px; overflow-y: auto;">
+            <table class="table align-items-center mb-0" style="color: black !important">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Admin</th>
+                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Salaire de Base</th>
+                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nbre dE jour Travaillees</th>
+                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Avance sur salaire</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for C in collaborateur %}
+              <tr>
+                <td>
+                  <div class="d-flex px-2 py-1">
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="mb-0 text-sm">{{ C.Nom }} {{ C.Prenom }}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-center">
+                  <p class="text-xs font-weight-bold mb-0">{{ C.Salaire_base }}</p>
+                </td>
+                <td class="align-middle text-center">
+                  <p class="text-xs font-weight-bold mb-0">{{ C.Nombre_de_Jour_Travaille_Admin }}</p>
+                </td>
+                <td class="align-middle text-center">
+                  <p class="text-xs font-weight-bold mb-0">{{ C.Avance_sur_salaire }}</p>
+                </td>                     
+                <!---->
+                <td class="align-middle">
+                  <form action="{% url 'EditSA' id=C.id %}" method="get">
+                    {% csrf_token %}  
+                    <button type="submit" value="submit"  class="btn bg-gradient-primary" data-toggle="tooltip" data-original-title="Edit user">
+                        Edit
+                    </button> 
+                  </form>
+                </td>
+              </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
