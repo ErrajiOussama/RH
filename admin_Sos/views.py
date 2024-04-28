@@ -155,6 +155,7 @@ def TableViewEv(request):
 @admin_only
 def TableView_Canada(request):
     current_date = datetime.now().date()
+    
     month_year_str = current_date.strftime('%B %Y')
     context = Collaborateur.objects.filter(Activite='CANADA')
     nom_query = request.GET.get('Nom', '')
@@ -182,7 +183,6 @@ def TableView_Paie_Mod_Admin(request):
     else:
         context = Collaborateur.objects.filter(Q(CSP='CADRE') | Q(CSP='TECHNICIEN')).filter(Q(Date_de_Sortie__gte=first_day_of_month) | Q(Date_de_Sortie__isnull=True))
     return render(request, 'admin_/salaire_complet/Modif Salaire Admin.html', {'collaborateur': context})
-
 
 @login_required(login_url='login')
 @admin_only
@@ -220,9 +220,19 @@ def TableView_Paie_Mod_Fran(request):
 @login_required(login_url='login')
 @admin_only
 def TableView_France(request):
+    current_date = datetime.now().date()
+    
+    month_year_str = current_date.strftime('%B %Y')
     context = Collaborateur.objects.filter(Activite='FRANCE')
-    context2 = Salaire_FRANCE.objects.all()
-    return render(request, 'admin_/salaire_complet/Salaries FRANCE.html', {'collaborateur': context, 'salaire':context2})
+    nom_query = request.GET.get('Nom', '')
+    prenom_query = request.GET.get('Nom', '')
+    if nom_query or prenom_query:
+        context = Collaborateur.objects.filter(Q(Nom__icontains=nom_query) | Q(Prenom__icontains=prenom_query))
+    else:
+        context= Collaborateur.objects.filter(Activite='FRANCE')
+    context2 = Salaire_FRANCE.objects.filter(Date_de_salaire__contains=month_year_str)
+
+    return render(request, 'admin_/salaire_complet/Salaries FRANCE.html', {'collaborateur': context,'salaire':context2})
 
 @login_required(login_url='login')
 @admin_only
@@ -251,8 +261,10 @@ def AddEView(request):
 @login_required(login_url='login')
 @admin_only
 def Form_EDS_CANADA(request,id):
+    current_date = datetime.now()
+    month_year_str = current_date.strftime('%B %Y')  
     instance= Collaborateur.objects.get(id=id)
-    salaire=Salaire_CANADA.objects.get(id_Collaborateur=id)
+    salaire=Salaire_CANADA.objects.get(id_Collaborateur=id,Date_de_salaire=month_year_str)
     if instance:
         return render(request,'admin_/salaire_complet/Form_Canada.html',{'collaborateur':instance,'salaire':salaire})
     return render(request,'admin_/salaire_complet/Salaries CANADA.html')
@@ -260,8 +272,10 @@ def Form_EDS_CANADA(request,id):
 @login_required(login_url='login')
 @admin_only
 def Form_EDS_FRANCE(request,id):
+    current_date = datetime.now()
+    month_year_str = current_date.strftime('%B %Y')  
     instance= Collaborateur.objects.get(id=id)
-    salaire=Salaire_FRANCE.objects.get(id_Collaborateur=id)
+    salaire=Salaire_FRANCE.objects.get(id_Collaborateur=id,Date_de_salaire=month_year_str)
     if instance:
         return render(request,'admin_/salaire_complet/Form_France.html',{'collaborateur':instance,'salaire':salaire})
     return render(request,'admin_/salaire_complet/Salaries FRANCE.html')
@@ -512,7 +526,9 @@ def Salaries_admin(request):
 @admin_only
 def generate_pdf_CANADA(request,id):
     collaborateur = get_object_or_404(Collaborateur, id=id)
-    salaire = Salaire_CANADA.objects.get(id_Collaborateur=id)
+    current_date = datetime.now()
+    month_year_str = current_date.strftime('%B %Y')
+    salaire = Salaire_CANADA.objects.get(id_Collaborateur=id,Date_de_salaire=month_year_str)
     context = {'collaborateur': collaborateur,'salaire':salaire}
     # Render Jinja2 template
     template = get_template('admin_/salaire_complet/Form_Canada.html')
@@ -523,13 +539,15 @@ def generate_pdf_CANADA(request,id):
     pdf_content = pdfkit.from_string(html, False, configuration=config)
     # Create an HttpResponse with PDF content
     response = HttpResponse(pdf_content, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="output.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="C.pdf"'
     return response
 
 @admin_only
 def generate_pdf_FRANCE(request,id):
+    current_date = datetime.now()
+    month_year_str = current_date.strftime('%B %Y')  
     collaborateur = get_object_or_404(Collaborateur, id=id)
-    salaire = Salaire_FRANCE.objects.get(id_Collaborateur=id)
+    salaire = Salaire_FRANCE.objects.get(id_Collaborateur=id,Date_de_salaire=month_year_str)
     context = {'collaborateur': collaborateur,'salaire':salaire}
     # Render Jinja2 template
     template = get_template('admin_/salaire_complet/Form_France.html')
