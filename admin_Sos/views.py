@@ -21,6 +21,7 @@ import pandas as pd
 from django.shortcuts import render
 from django.contrib import messages
 
+@login_required(login_url='login')
 def IndexView(request):
     current_date = datetime.now().date()
     events = Event.objects.filter(Date_debut__lte=current_date, Date_fin__gte=current_date)
@@ -64,7 +65,7 @@ def loginPageView(request):
         messages.error(request, 'Nom d\'utilisateur ou mot de passe incorrect')
     else:
         form = AuthenticationForm()
-    return render(request, 'Agent/login.html', {'form': form})
+    return render(request, 'Agent/Login.html', {'form': form})
 
 @admin_only
 def registerPageView(request):  
@@ -273,7 +274,7 @@ def Form_EDS_CANADA(request,id):
 @admin_only
 def Form_EDS_FRANCE(request,id):
     current_date = datetime.now()
-    month_year_str = current_date.strftime('%B %Y')  
+    month_year_str = current_date.strftime('%B %Y')
     instance= Collaborateur.objects.get(id=id)
     salaire=Salaire_FRANCE.objects.get(id_Collaborateur=id,Date_de_salaire=month_year_str)
     if instance:
@@ -553,7 +554,7 @@ def generate_pdf_FRANCE(request,id):
     template = get_template('admin_/salaire_complet/Form_France.html')
     html = template.render(context)
     # Configure pdfkit
-    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    config = pdfkit.configuration(wkhtmltopdf='/bin/wkhtmltopdf')
     # Convert HTML to PDF
     pdf_content = pdfkit.from_string(html, False, configuration=config)
     # Create an HttpResponse with PDF content

@@ -9,3 +9,5 @@ pip install xhtml2pdf
 pip3 install jinja2     
 pip3 install pdfkit   
 pip install -U channels["daphne"]
+pip3 install celery
+pip3 install pandas
